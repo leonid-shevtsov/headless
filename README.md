@@ -3,6 +3,7 @@
 Headless is a Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding some low-level action.
 
 I created it so I can run Selenium tests in Cucumber without any shell scripting. Even more, you can go headless only when you run tests against Selenium.
+Other possible uses include pdf generation with `wkhtmltopdf`, or screenshotting.
 
 ## Installation
 

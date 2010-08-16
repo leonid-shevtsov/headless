@@ -35,8 +35,6 @@
 #   headless.destroy
 #--
 # TODO test that reuse actually works with an existing xvfb session
-# TODO maybe write a command-line wrapper like
-#   headlessly firefox
 #++
 class Headless
 
@@ -46,20 +44,27 @@ class Headless
   # The display number
   attr_reader :display
 
-  # Creates a new headless server, but NOT switches to it immediately. Call #start for that
-  def initialize(options = {})
-    @xvfb = `which Xvfb`.strip
-    raise Exception.new('Xvfb not found on your system') if @xvfb == ''
+  # The display dimensions
+  attr_reader :dimensions
 
-    # TODO more options, like display dimensions and depth; set up default dimensions and depth
+  # Creates a new headless server, but does NOT switch to it immediately. Call #start for that
+  #
+  # List of available options:
+  # * +display+ (default 99) - what display number to listen to;
+  # * +reuse+ (default true) - if given display server already exists, should we use it or fail miserably?
+  # * +dimensions+ (default 1280x1024x24) - display dimensions and depth. Not all combinations are possible, refer to +man Xvfb+.
+  def initialize(options = {})
+    find_xvfb
+
     @display = options.fetch(:display, 99).to_i
     @reuse_display = options.fetch(:reuse, true)
+    @dimensions = options.fetch(:dimensions, '1280x1024x24')
 
     #TODO more logic here, autopicking the display number
     if @reuse_display
       launch_xvfb unless read_pid
     elsif read_pid
-      raise Exception.neW("Display :#{display} is already taken and reuse=false")
+      raise Exception.new("Display :#{display} is already taken and reuse=false")
     else
       launch_xvfb
     end
@@ -89,8 +94,7 @@ class Headless
   #   Headless.run do
   #     # perform operations in headless mode
   #   end
-  # 
-  # Alias: #ly (Headless.ly)
+  # See #new for options
   def self.run(options={}, &block)
     headless = Headless.new(options)
     headless.start
@@ -103,8 +107,14 @@ class Headless
 private
   attr_reader :xvfb_pid
 
+  def find_xvfb
+    @xvfb = `which Xvfb`.strip
+    raise Exception.new('Xvfb not found on your system') if @xvfb == ''
+  end
+
   def launch_xvfb
-    system "#{@xvfb} :#{display} -ac >/dev/null 2>&1 &"
+    #TODO error reporting
+    system "#{@xvfb} :#{display} -screen 0 #{dimensions} -ac >/dev/null 2>&1 &"
     sleep 1
   end
 
