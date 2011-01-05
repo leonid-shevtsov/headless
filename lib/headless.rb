@@ -86,7 +86,14 @@ class Headless
   # Switches back from the headless server and terminates the headless session
   def destroy
     stop
-    Process.kill('TERM', xvfb_pid) if read_pid
+    begin
+      Process.kill('TERM', xvfb_pid) if read_pid
+    rescue Errno::ESRCH
+      # clean up if the process can't be killed
+      # because it is alreday gone.
+      File.delete(pidfile_name)
+    end
+
   end
 
   # Block syntax:
@@ -118,8 +125,12 @@ private
     sleep 1
   end
 
+  def pidfile_name
+    "/tmp/.X#{display}-lock"
+  end
+
   def read_pid
-    @xvfb_pid=(File.read("/tmp/.X#{display}-lock") rescue "").strip.to_i
+    @xvfb_pid=(File.read(pidfile_name) rescue "").strip.to_i
     @xvfb_pid=nil if @xvfb_pid==0
     @xvfb_pid
     #TODO maybe check that the process still exists
