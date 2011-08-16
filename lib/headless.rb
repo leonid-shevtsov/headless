@@ -1,3 +1,5 @@
+require 'headless/cli_util'
+
 # A class incapsulating the creation and usage of a headless X server
 #
 # == Prerequisites
@@ -54,7 +56,7 @@ class Headless
   # * +reuse+ (default true) - if given display server already exists, should we use it or fail miserably?
   # * +dimensions+ (default 1280x1024x24) - display dimensions and depth. Not all combinations are possible, refer to +man Xvfb+.
   def initialize(options = {})
-    find_xvfb
+    raise Exception.new("Xvfb not found on your system") unless CliUtil.application_exists?("Xvfb")
 
     @display = options.fetch(:display, 99).to_i
     @reuse_display = options.fetch(:reuse, true)
@@ -62,14 +64,12 @@ class Headless
 
     #TODO more logic here, autopicking the display number
     if @reuse_display
-      launch_xvfb unless read_pid
-    elsif read_pid
+      launch_xvfb unless xvfb_running?
+    elsif xvfb_running?
       raise Exception.new("Display :#{display} is already taken and reuse=false")
     else
       launch_xvfb
     end
-
-    raise Exception.new("Xvfb did not launch - something's wrong") unless read_pid
   end
 
   # Switches to the headless server
@@ -86,7 +86,7 @@ class Headless
   # Switches back from the headless server and terminates the headless session
   def destroy
     stop
-    Process.kill('TERM', xvfb_pid) if read_pid
+    Process.kill('TERM', read_xvfb_pid) if xvfb_running?
   end
 
   # Block syntax:
@@ -101,27 +101,22 @@ class Headless
     yield headless
     headless.destroy
   end
-
   class <<self; alias_method :ly, :run; end
 
 private
-  attr_reader :xvfb_pid
-
-  def find_xvfb
-    @xvfb = `which Xvfb`.strip
-    raise Exception.new('Xvfb not found on your system') if @xvfb == ''
-  end
 
   def launch_xvfb
     #TODO error reporting
-    system "#{@xvfb} :#{display} -screen 0 #{dimensions} -ac >/dev/null 2>&1 &"
-    sleep 1
+    result = system "#{CliUtil.path_to("Xvfb")} :#{display} -screen 0 #{dimensions} -ac >/dev/null 2>&1 &"
+    raise Exception.new("Xvfb did not launch - something's wrong") unless result
   end
 
-  def read_pid
-    @xvfb_pid=(File.read("/tmp/.X#{display}-lock") rescue "").strip.to_i
-    @xvfb_pid=nil if @xvfb_pid==0
-    @xvfb_pid
+  def xvfb_running?
+    read_xvfb_pid
+  end
+
+  def read_xvfb_pid
     #TODO maybe check that the process still exists
+    CliUtil.read_pid("/tmp/.X#{display}-lock")
   end
 end
