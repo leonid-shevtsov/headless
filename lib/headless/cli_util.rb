@@ -1,6 +1,6 @@
 class CliUtil
   def self.application_exists?(app)
-    `which #{app}`.strip == ""
+    `which #{app}`.strip != ""
   end
 
   def self.path_to(app)
