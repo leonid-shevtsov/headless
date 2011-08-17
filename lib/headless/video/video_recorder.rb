@@ -10,7 +10,7 @@ class VideoRecorder
     @pid_file = "/tmp/.recorder_#{@display}-lock"
   end
 
-  def start
+  def capture
     CliUtil.fork_process("ffmpeg -y -r 30 -g 600 -s #{@dimensions} -f x11grab -i :#{@display} -vcodec qtrle /tmp/ci.mov", @pid_file)
   end
 

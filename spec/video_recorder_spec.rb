@@ -15,12 +15,12 @@ describe VideoRecorder do
     end
   end
 
-  describe "#start" do
+  describe "#capture" do
     it "starts ffmpeg" do
-      CliUtil.should_receive(:fork_process).with(/ffmpeg -y -r 30 -g 600 -s 1024x768x32 -f x11grab -i :99 -vcodec qtrle/, "/var/run/recorder_99.pid")
+      CliUtil.should_receive(:fork_process).with(/ffmpeg -y -r 30 -g 600 -s 1024x768x32 -f x11grab -i :99 -vcodec qtrle/, "/tmp/.recorder_99-lock")
 
       recorder = VideoRecorder.new(99, "1024x768x32")
-      recorder.start
+      recorder.capture
     end
   end
 
