@@ -7,8 +7,8 @@ class CliUtil
     `which #{app}`.strip
   end
 
-  def self.read_pid(file)
-    pid = (File.read("/tmp/.X#{display}-lock") rescue "").strip.to_i
+  def self.read_pid(pid_file_path)
+    pid = (File.read(pid_file_path) rescue "").strip.to_i
     pid == 0 ? nil : pid
   end
 
