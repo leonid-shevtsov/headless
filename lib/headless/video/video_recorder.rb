@@ -16,6 +16,7 @@ class VideoRecorder
 
   def stop_and_save(path)
     CliUtil.kill_process(@pid_file)
+    sleep 1 #TODO: invent something smarter, TERM message is async and we have to wait until ffmpeg flush its buffer.
     FileUtils.cp("/tmp/ci.mov", path)
   end
 
