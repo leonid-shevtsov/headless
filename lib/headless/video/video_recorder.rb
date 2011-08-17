@@ -7,7 +7,7 @@ class VideoRecorder
     @display = display
     @dimensions = dimensions
 
-    @pid_file = "/var/run/recorder_#{@display}.pid"
+    @pid_file = "/tmp/.recorder_#{@display}-lock"
   end
 
   def start
