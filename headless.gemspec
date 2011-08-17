@@ -18,5 +18,4 @@ spec = Gem::Specification.new do |s|
   s.has_rdoc = true
 
   s.add_development_dependency "rspec", "~> 2.6"
-  s.add_development_dependency "ruby-debug"
 end
