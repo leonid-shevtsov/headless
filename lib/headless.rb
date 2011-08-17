@@ -1,4 +1,5 @@
 require 'headless/cli_util'
+require 'headless/video/video_recorder'
 
 # A class incapsulating the creation and usage of a headless X server
 #
@@ -49,6 +50,9 @@ class Headless
   # The display dimensions
   attr_reader :dimensions
 
+  # Video capture options
+  attr_reader :video_capture_opts
+
   # Creates a new headless server, but does NOT switch to it immediately. Call #start for that
   #
   # List of available options:
@@ -61,6 +65,7 @@ class Headless
     @display = options.fetch(:display, 99).to_i
     @reuse_display = options.fetch(:reuse, true)
     @dimensions = options.fetch(:dimensions, '1280x1024x24')
+    @video_capture_opts = options.fetch(:video_capture_opts, {})
 
     #TODO more logic here, autopicking the display number
     if @reuse_display
@@ -102,6 +107,10 @@ class Headless
     headless.destroy
   end
   class <<self; alias_method :ly, :run; end
+
+  def video
+    @video_recorder ||= VideoRecorder.new(display, dimensions, video_capture_opts)
+  end
 
 private
 

@@ -84,6 +84,19 @@ describe Headless do
     end
   end
 
+  context "#video" do
+    let(:headless) { Headless.new }
+
+    it "returns video recorder" do
+      headless.video.should be_a_kind_of(VideoRecorder)
+    end
+
+    it "returns the same instance" do
+      recorder = headless.video
+      headless.video.should be_eql(recorder)
+    end
+  end
+
 private
 
   def stub_environment
