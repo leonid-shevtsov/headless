@@ -1,5 +1,3 @@
-require 'rake'
-
 spec = Gem::Specification.new do |s|
   s.author = 'Leonid Shevtsov'
   s.email = 'leonid@shevtsov.me'
@@ -14,7 +12,7 @@ spec = Gem::Specification.new do |s|
   s.requirements = 'Xvfb'
   s.homepage = 'http://github.com/leonid-shevtsov/headless'
 
-  s.files = FileList['lib/*.rb', '[A-Z]*'].to_a
+  s.files         = `git ls-files`.split("\n")
   s.has_rdoc = true
 
   s.add_development_dependency "rspec", "~> 2.6"
