@@ -112,6 +112,12 @@ class Headless
     @video_recorder ||= VideoRecorder.new(display, dimensions, video_capture_opts)
   end
 
+  def take_screenshot(file_path)
+    raise Exception.new("imagemagick not found on your system. Please install it using sudo apt-get install imagemagick") unless CliUtil.application_exists?("import")
+
+    system "import -display localhost:#{display} -window root #{file_path}"
+  end
+
 private
 
   def launch_xvfb

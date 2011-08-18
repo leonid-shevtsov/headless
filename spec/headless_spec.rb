@@ -97,6 +97,24 @@ describe Headless do
     end
   end
 
+  context "#take_screenshot" do
+    let(:headless) { Headless.new }
+
+    it "raises an error if imagemagick is not installed" do
+      CliUtil.stub!(:application_exists?).and_return(false)
+
+      lambda { headless.take_screenshot }.should raise_error(Headless::Exception)
+    end
+
+    it "issues command to take screenshot" do
+      headless = Headless.new
+
+      Headless.any_instance.should_receive(:system)
+
+      headless.take_screenshot("/tmp/image.png")
+    end
+  end
+
 private
 
   def stub_environment

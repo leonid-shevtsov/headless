@@ -30,7 +30,7 @@ describe VideoRecorder do
       @recorder.capture
     end
 
-    describe "#stop_and_save" do
+    describe "using #stop_and_save" do
       it "stops video recording and saves file" do
         CliUtil.should_receive(:kill_process).with("/tmp/pid")
         FileUtils.should_receive(:cp).with("/tmp/ci.mov", "/tmp/test.mov")
@@ -39,12 +39,12 @@ describe VideoRecorder do
       end
     end
 
-    describe "#stop_and_discard" do
+    describe "using #stop_and_discard" do
       it "stops video recording and deletes temporary file" do
         CliUtil.should_receive(:kill_process).with("/tmp/pid")
         FileUtils.should_receive(:rm).with("/tmp/ci.mov")
 
-        @recorder.stop_and_save("/tmp/test.mov")
+        @recorder.stop_and_discard
       end
     end
   end
