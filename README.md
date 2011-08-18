@@ -62,7 +62,7 @@ Running cucumber headless is now as simple as adding a before and after hook in 
 
 ## Capturing video
 
-Video is captured using `ffmpeg` application. You can install it on ubuntu via `sudo apt-get install ffmpeg` or on OS X via `brew install ffmpeg`. You can capture video continuously or capture scenarios separately. Here is typical use case:
+Video is captured using `ffmpeg`. You can install it on ubuntu via `sudo apt-get install ffmpeg` or on OS X via `brew install ffmpeg`. You can capture video continuously or capture scenarios separately. Here is typical use case:
 
     require 'headless'
 
@@ -81,7 +81,7 @@ Video is captured using `ffmpeg` application. You can install it on ubuntu via `
       if scenario.failed?
         headless.video.stop_and_save("/tmp/#{BUILD_ID}/#{scenario.name.split.join("_")}.mov")
       else
-        headless.video.stop_and_clear
+        headless.video.stop_and_discard
       end
     end
 

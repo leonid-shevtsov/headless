@@ -24,9 +24,35 @@ describe VideoRecorder do
     end
   end
 
+  context "stopping video recording" do
+    before do
+      @recorder = VideoRecorder.new(99, "1024x768x32", :pid_file_path => "/tmp/pid", :tmp_file_path => "/tmp/ci.mov")
+      @recorder.capture
+    end
+
+    describe "#stop_and_save" do
+      it "stops video recording and saves file" do
+        CliUtil.should_receive(:kill_process).with("/tmp/pid")
+        FileUtils.should_receive(:cp).with("/tmp/ci.mov", "/tmp/test.mov")
+
+        @recorder.stop_and_save("/tmp/test.mov")
+      end
+    end
+
+    describe "#stop_and_discard" do
+      it "stops video recording and deletes temporary file" do
+        CliUtil.should_receive(:kill_process).with("/tmp/pid")
+        FileUtils.should_receive(:rm).with("/tmp/ci.mov")
+
+        @recorder.stop_and_save("/tmp/test.mov")
+      end
+    end
+  end
+
 private
 
   def stub_environment
     CliUtil.stub!(:application_exists?).and_return(true)
+    CliUtil.stub!(:fork_process).and_return(true)
   end
 end
