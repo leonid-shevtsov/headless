@@ -13,7 +13,6 @@ spec = Gem::Specification.new do |s|
   s.homepage = 'http://github.com/leonid-shevtsov/headless'
 
   s.files         = `git ls-files`.split("\n")
-  s.has_rdoc = true
 
   s.add_development_dependency "rspec", "~> 2.6"
 end
