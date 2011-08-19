@@ -12,7 +12,7 @@ class VideoRecorder
   end
 
   def capture
-    CliUtil.fork_process("ffmpeg -y -r 30 -g 600 -s #{@dimensions} -f x11grab -i :#{@display} -vcodec qtrle /tmp/ci.mov", @pid_file)
+    CliUtil.fork_process("ffmpeg -y -r 30 -g 600 -s #{@dimensions} -f x11grab -i :#{@display} -vcodec qtrle /tmp/ci.mov >/dev/null 2>&1 &", @pid_file)
   end
 
   def stop_and_save(path)
