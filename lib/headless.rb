@@ -12,11 +12,11 @@
 #   require 'rubygems'
 #   require 'headless'
 #   require 'selenium-webdriver'
-# 
+#
 #   Headless.ly do
 #     driver = Selenium::WebDriver.for :firefox
 #     driver.navigate.to 'http://google.com'
-#     puts driver.title 
+#     puts driver.title
 #   end
 #
 # Object mode:
@@ -30,7 +30,7 @@
 #
 #   driver = Selenium::WebDriver.for :firefox
 #   driver.navigate.to 'http://google.com'
-#   puts driver.title 
+#   puts driver.title
 #
 #   headless.destroy
 #--
@@ -59,6 +59,7 @@ class Headless
     @display = options.fetch(:display, 99).to_i
     @reuse_display = options.fetch(:reuse, true)
     @dimensions = options.fetch(:dimensions, '1280x1024x24')
+    @do_not_kill_xvfb = options.fetch(:do_not_kill_xvfb, false)
 
     #TODO more logic here, autopicking the display number
     if @reuse_display
@@ -84,9 +85,13 @@ class Headless
   end
 
   # Switches back from the headless server and terminates the headless session
+  def kill_xvfb
+    Process.kill('TERM', xvfb_pid) if read_pid
+  end
+
   def destroy
     stop
-    Process.kill('TERM', xvfb_pid) if read_pid
+    kill_xvfb unless @do_not_kill_xvfb
   end
 
   # Block syntax:
