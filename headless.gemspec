@@ -1,9 +1,7 @@
-require 'rake'
-
 spec = Gem::Specification.new do |s|
   s.author = 'Leonid Shevtsov'
   s.email = 'leonid@shevtsov.me'
-  
+
   s.name = 'headless'
   s.version = '0.1.0'
   s.summary = 'Ruby headless display interface'
@@ -14,6 +12,7 @@ spec = Gem::Specification.new do |s|
   s.requirements = 'Xvfb'
   s.homepage = 'http://github.com/leonid-shevtsov/headless'
 
-  s.files = FileList['lib/*.rb', '[A-Z]*'].to_a
-  s.has_rdoc = true
+  s.files         = `git ls-files`.split("\n")
+
+  s.add_development_dependency "rspec", "~> 2.6"
 end

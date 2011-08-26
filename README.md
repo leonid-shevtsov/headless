@@ -60,6 +60,35 @@ Running cucumber headless is now as simple as adding a before and after hook in 
       end
     end
 
+## Capturing video
+
+Video is captured using `ffmpeg`. You can install it on Debian/Ubuntu via `sudo apt-get install ffmpeg` or on OS X via `brew install ffmpeg`. You can capture video continuously or capture scenarios separately. Here is typical use case:
+
+    require 'headless'
+
+    headless = Headless.new
+    headless.start
+
+    at_exit do
+      headless.destroy
+    end
+
+    Before do
+      headless.video.capture
+    end
+
+    After do |scenario|
+      if scenario.failed?
+        headless.video.stop_and_save("/tmp/#{BUILD_ID}/#{scenario.name.split.join("_")}.mov")
+      else
+        headless.video.stop_and_discard
+      end
+    end
+
+## Taking screenshots
+
+Images are captured using `import` utility which is part of `imagemagick` library. You can install it on Ubuntu via `sudo apt-get install imagemagick`. You can call `headless.take_screenshot` at any time. You have to supply full path to target file. File format is determined by supplied file extension.
+
 ---
 
 &copy; 2010 Leonid Shevtsov, released under the MIT license
