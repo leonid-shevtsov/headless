@@ -89,6 +89,10 @@ Video is captured using `ffmpeg`. You can install it on Debian/Ubuntu via `sudo 
 
 Images are captured using `import` utility which is part of `imagemagick` library. You can install it on Ubuntu via `sudo apt-get install imagemagick`. You can call `headless.take_screenshot` at any time. You have to supply full path to target file. File format is determined by supplied file extension.
 
+## Contributors
+
+* [Igor Afonov](http://iafonov.github.com) - video and screenshot capturing functionality.
+
 ---
 
-&copy; 2010 Leonid Shevtsov, released under the MIT license
+&copy; 2011 Leonid Shevtsov, released under the MIT license
