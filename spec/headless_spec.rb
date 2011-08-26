@@ -9,7 +9,7 @@ describe Headless do
   context "instaniation" do
     context "when Xvfb is not installed" do
       before do
-        CliUtil.stub!(:application_exists?).and_return(false)
+        Headless::CliUtil.stub!(:application_exists?).and_return(false)
       end
 
       it "raises an error" do
@@ -33,7 +33,7 @@ describe Headless do
 
     context "when Xvfb is already running" do
       before do
-        CliUtil.stub!(:read_pid).and_return(31337)
+        Headless::CliUtil.stub!(:read_pid).and_return(31337)
       end
 
       it "raises an error if reuse display is not allowed" do
@@ -69,7 +69,7 @@ describe Headless do
 
     describe "#destroy" do
       before do
-        CliUtil.stub!(:read_pid).and_return(4444)
+        Headless::CliUtil.stub!(:read_pid).and_return(4444)
       end
 
       it "switches back from the headless server and terminates the headless session" do
@@ -88,7 +88,7 @@ describe Headless do
     let(:headless) { Headless.new }
 
     it "returns video recorder" do
-      headless.video.should be_a_kind_of(VideoRecorder)
+      headless.video.should be_a_kind_of(Headless::VideoRecorder)
     end
 
     it "returns the same instance" do
@@ -101,7 +101,7 @@ describe Headless do
     let(:headless) { Headless.new }
 
     it "raises an error if imagemagick is not installed" do
-      CliUtil.stub!(:application_exists?).and_return(false)
+      Headless::CliUtil.stub!(:application_exists?).and_return(false)
 
       lambda { headless.take_screenshot }.should raise_error(Headless::Exception)
     end
@@ -118,8 +118,8 @@ describe Headless do
 private
 
   def stub_environment
-    CliUtil.stub!(:application_exists?).and_return(true)
-    CliUtil.stub!(:read_pid).and_return(nil)
-    CliUtil.stub!(:path_to).and_return("/usr/bin/Xvfb")
+    Headless::CliUtil.stub!(:application_exists?).and_return(true)
+    Headless::CliUtil.stub!(:read_pid).and_return(nil)
+    Headless::CliUtil.stub!(:path_to).and_return("/usr/bin/Xvfb")
   end
 end

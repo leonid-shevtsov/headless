@@ -1,6 +1,7 @@
 # Headless
 
 Headless is a Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding some low-level action.
+It can also capture images and video from the virtual framebuffer.
 
 I created it so I can run Selenium tests in Cucumber without any shell scripting. Even more, you can go headless only when you run tests against Selenium.
 Other possible uses include pdf generation with `wkhtmltopdf`, or screenshotting.
@@ -54,10 +55,6 @@ Running cucumber headless is now as simple as adding a before and after hook in 
 
       headless = Headless.new
       headless.start
-
-      at_exit do
-        headless.destroy
-      end
     end
 
 ## Capturing video
@@ -69,12 +66,8 @@ Video is captured using `ffmpeg`. You can install it on Debian/Ubuntu via `sudo 
     headless = Headless.new
     headless.start
 
-    at_exit do
-      headless.destroy
-    end
-
     Before do
-      headless.video.capture
+      headless.video.start_capture
     end
 
     After do |scenario|
