@@ -59,7 +59,7 @@ class Headless
     @display = options.fetch(:display, 99).to_i
     @reuse_display = options.fetch(:reuse, true)
     @dimensions = options.fetch(:dimensions, '1280x1024x24')
-    @do_not_kill_xvfb = options.fetch(:do_not_kill_xvfb, false)
+    @destroy_at_exit = options.fetch(:destroy_at_exit, true)
 
     #TODO more logic here, autopicking the display number
     if @reuse_display
@@ -91,7 +91,7 @@ class Headless
 
   def destroy
     stop
-    kill_xvfb unless @do_not_kill_xvfb
+    kill_xvfb if @destroy_at_exit
   end
 
   # Block syntax:
