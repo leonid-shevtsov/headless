@@ -16,25 +16,28 @@ class Headless
     end
 
     def capture_running?
-      !!@capture_running
+      CliUtil.read_pid @pid_file_path
     end
 
     def start_capture
       CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r 30 -g 600 -s #{@dimensions} -f x11grab -i :#{@display} -vcodec qtrle #{@tmp_file_path}", @pid_file_path, @log_file_path)
-      @capture_running = true
       at_exit do
-        stop_and_discard if capture_running?
+        stop_and_discard
       end
     end
 
     def stop_and_save(path)
-      @capture_running = false
       CliUtil.kill_process(@pid_file_path, :wait => true)
-      FileUtils.mv(@tmp_file_path, path)
+      if File.exists? @tmp_file_path
+        begin
+          FileUtils.mv(@tmp_file_path, path)
+        rescue Errno::EINVAL
+          nil
+        end
+      end
     end
 
     def stop_and_discard
-      @capture_running = false
       CliUtil.kill_process(@pid_file_path, :wait => true)
       begin
         FileUtils.rm(@tmp_file_path)

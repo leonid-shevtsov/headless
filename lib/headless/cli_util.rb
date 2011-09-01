@@ -16,7 +16,18 @@ class Headless
 
     def self.read_pid(pid_filename)
       pid = (File.read(pid_filename) rescue "").strip.to_i
-      pid == 0 ? nil : pid
+      pid = nil if pid.zero?
+
+      if pid
+        begin
+          Process.kill(0, pid)
+          pid
+        rescue Errno::ESRCH
+          nil
+        end
+      else
+        nil
+      end
     end
 
     def self.fork_process(command, pid_filename, log_filename='/dev/null')
