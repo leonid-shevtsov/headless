@@ -28,7 +28,9 @@ class Headless
 
     def stop_and_save(path)
       CliUtil.kill_process(@pid_file_path, :wait => true)
-      FileUtils.mv(@tmp_file_path, path)
+      if File.exists? @tmp_file_path
+        FileUtils.mv(@tmp_file_path, path)
+      end
     end
 
     def stop_and_discard
