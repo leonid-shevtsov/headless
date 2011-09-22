@@ -50,6 +50,8 @@ class Headless
           Process.wait pid if options[:wait]
         rescue Errno::ESRCH
           # no such process; assume it's already killed
+        rescue Errno::ECHILD
+          # process has finished exiting between kill and wait
         end
       end
       
