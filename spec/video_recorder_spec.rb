@@ -5,7 +5,7 @@ describe Headless::VideoRecorder do
     stub_environment
   end
 
-  describe "instaniation" do
+  describe "instantiation" do
     before do
       Headless::CliUtil.stub!(:application_exists?).and_return(false)
     end
