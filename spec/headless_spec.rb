@@ -1,8 +1,11 @@
-require 'lib/headless'
+require 'spec_helper'
 
 describe Headless do
+  let(:display_before) { ':31337' }
+  let(:display_after) { ':99' }
+
   before do
-    ENV['DISPLAY'] = ":31337"
+    ENV['DISPLAY'] = display_before
     stub_environment
   end
 
@@ -19,13 +22,13 @@ describe Headless do
 
     context "when Xvfb not started yet" do
       it "starts Xvfb" do
-        Headless.any_instance.should_receive(:system).with("/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac >/dev/null 2>&1 &").and_return(true)
+        Headless.any_instance.should_receive(:system).with("/usr/bin/Xvfb #{display_after} -screen 0 1280x1024x24 -ac >/dev/null 2>&1 &").and_return(true)
 
         headless = Headless.new
       end
 
       it "allows setting screen dimensions" do
-        Headless.any_instance.should_receive(:system).with("/usr/bin/Xvfb :99 -screen 0 1024x768x16 -ac >/dev/null 2>&1 &").and_return(true)
+        Headless.any_instance.should_receive(:system).with("/usr/bin/Xvfb #{display_after} -screen 0 1024x768x16 -ac >/dev/null 2>&1 &").and_return(true)
 
         headless = Headless.new(:dimensions => "1024x768x16")
       end
@@ -49,37 +52,40 @@ describe Headless do
 
   context "lifecycle" do
     let(:headless) { Headless.new }
+
     describe "#start" do
       it "switches to the headless server" do
-        ENV['DISPLAY'].should == ":31337"
+        ENV['DISPLAY'].should == display_before
         headless.start
-        ENV['DISPLAY'].should == ":99"
+        ENV['DISPLAY'].should == display_after
       end
     end
 
     describe "#stop" do
       it "switches back from the headless server" do
-        ENV['DISPLAY'].should == ":31337"
+        ENV['DISPLAY'].should == display_before
         headless.start
-        ENV['DISPLAY'].should == ":99"
+        ENV['DISPLAY'].should == display_after
         headless.stop
-        ENV['DISPLAY'].should == ":31337"
+        ENV['DISPLAY'].should == display_before
       end
     end
 
     describe "#destroy" do
+      let(:pid) { 4444 }
+
       before do
-        Headless::CliUtil.stub!(:read_pid).and_return(4444)
+        Headless::CliUtil.stub!(:read_pid).and_return(pid)
       end
 
       it "switches back from the headless server and terminates the headless session" do
-        Process.should_receive(:kill).with('TERM', 4444)
+        Process.should_receive(:kill).with('TERM', pid)
 
-        ENV['DISPLAY'].should == ":31337"
+        ENV['DISPLAY'].should == display_before
         headless.start
-        ENV['DISPLAY'].should == ":99"
+        ENV['DISPLAY'].should == display_after
         headless.destroy
-        ENV['DISPLAY'].should == ":31337"
+        ENV['DISPLAY'].should == display_before
       end
     end
   end
@@ -116,7 +122,6 @@ describe Headless do
   end
 
 private
-
   def stub_environment
     Headless::CliUtil.stub!(:application_exists?).and_return(true)
     Headless::CliUtil.stub!(:read_pid).and_return(nil)
