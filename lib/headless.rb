@@ -135,7 +135,12 @@ private
   end
 
   def read_xvfb_pid
-    CliUtil.read_pid(pid_filename)
+    begin
+      CliUtil.read_pid(pid_filename)
+    rescue Errn::EPERM
+      @display -= 1
+      retry
+    end
   end
     
   def hook_at_exit
