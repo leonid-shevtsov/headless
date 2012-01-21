@@ -137,7 +137,7 @@ private
   def read_xvfb_pid
     begin
       CliUtil.read_pid(pid_filename)
-    rescue Errn::EPERM
+    rescue Errno::EPERM
       @display -= 1
       retry
     end
