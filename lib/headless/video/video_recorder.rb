@@ -13,6 +13,7 @@ class Headless
       @pid_file_path = options.fetch(:pid_file_path, "/tmp/.headless_ffmpeg_#{@display}.pid")
       @tmp_file_path = options.fetch(:tmp_file_path, "/tmp/.headless_ffmpeg_#{@display}.mov")
       @log_file_path = options.fetch(:log_file_path, "/dev/null")
+      @codec = options.fetch(:codec, "qtrle")
     end
 
     def capture_running?
@@ -20,9 +21,11 @@ class Headless
     end
 
     def start_capture
-      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r 30 -g 600 -s #{@dimensions} -f x11grab -i :#{@display} -vcodec qtrle #{@tmp_file_path}", @pid_file_path, @log_file_path)
+      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r 30 -g 600 -s #{@dimensions} -f x11grab -i :#{@display} -vcodec #{@codec} #{@tmp_file_path}", @pid_file_path, @log_file_path)
       at_exit do
+        exit_status = $!.status if $!.is_a?(SystemExit)
         stop_and_discard
+        exit exit_status if exit_status
       end
     end
 
