@@ -1,4 +1,4 @@
-require 'lib/headless'
+require 'spec_helper'
 
 describe Headless::VideoRecorder do
   before do
