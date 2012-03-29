@@ -23,7 +23,9 @@ class Headless
     def start_capture
       CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r 30 -g 600 -s #{@dimensions} -f x11grab -i :#{@display} -vcodec #{@codec} #{@tmp_file_path}", @pid_file_path, @log_file_path)
       at_exit do
+        exit_status = $!.status if $!.is_a?(SystemExit)
         stop_and_discard
+        exit exit_status if exit_status
       end
     end
 
