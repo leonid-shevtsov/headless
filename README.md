@@ -1,12 +1,14 @@
-# Headless
+# Headless [![Travis CI status](https://secure.travis-ci.org/leonid-shevtsov/headless.png)](http://travis-ci.org/leonid-shevtsov/headless)
 
-Headless is a Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding some low-level action.
+Headless is *the* Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding some low-level action.
 It can also capture images and video from the virtual framebuffer.
 
 I created it so I can run Selenium tests in Cucumber without any shell scripting. Even more, you can go headless only when you run tests against Selenium.
 Other possible uses include pdf generation with `wkhtmltopdf`, or screenshotting.
 
 Documentation is available at [rdoc.info](http://rdoc.info/projects/leonid-shevtsov/headless)
+
+[Changelog](https://github.com/leonid-shevtsov/headless/blob/master/CHANGELOG)
 
 ## Installation
 

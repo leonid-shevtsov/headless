@@ -1,3 +1,8 @@
+## 0.3.1 (2012-03-29)
+
+* added autopicking of display number, if the requested one is already taken
+* fixed plenty of bugs thanks to @recursive, @gshakhn, @masatomo and @mabotelh
+
 ## 0.2.2 (2011-09-01)
 
 * improve detection of ffmpeg process (from https://github.com/alanshields/headless)
