@@ -1,4 +1,4 @@
-require 'lib/headless'
+require 'headless'
 
 describe Headless do
   before do
