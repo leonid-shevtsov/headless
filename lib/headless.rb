@@ -41,6 +41,9 @@ require 'headless/video/video_recorder'
 #++
 class Headless
 
+  DEFAULT_DISPLAY_NUMBER = 99
+  DEFAULT_DISPLAY_DIMENSIONS = '1280x1024x24'
+
   class Exception < RuntimeError
   end
 
@@ -54,26 +57,21 @@ class Headless
   #
   # List of available options:
   # * +display+ (default 99) - what display number to listen to;
-  # * +reuse+ (default true) - if given display server already exists, should we use it or fail miserably?
+  # * +reuse+ (default true) - if given display server already exists, should we use it or try another?
+  # * +autopick+ (default true is display number isn't explicitly set) - if Headless should automatically pick a display, or fail if the given one is not available.
   # * +dimensions+ (default 1280x1024x24) - display dimensions and depth. Not all combinations are possible, refer to +man Xvfb+.
   # * +destroy_at_exit+ (default true) - if a display is started but not stopped, should it be destroyed when the script finishes?
   def initialize(options = {})
     CliUtil.ensure_application_exists!('Xvfb', 'Xvfb not found on your system')
 
-    @display = options.fetch(:display, 99).to_i
+    @display = options.fetch(:display, DEFAULT_DISPLAY_NUMBER).to_i
+    @autopick_display = options.fetch(:autopick, !options.key?(:display))
     @reuse_display = options.fetch(:reuse, true)
-    @dimensions = options.fetch(:dimensions, '1280x1024x24')
+    @dimensions = options.fetch(:dimensions, DEFAULT_DISPLAY_DIMENSIONS)
     @video_capture_options = options.fetch(:video, {})
     @destroy_at_exit = options.fetch(:destroy_at_exit, true)
 
-    #TODO more logic here, autopicking the display number
-    if @reuse_display
-      launch_xvfb unless xvfb_running?
-    elsif xvfb_running?
-      raise Headless::Exception.new("Display :#{display} is already taken and reuse=false")
-    else
-      launch_xvfb
-    end
+    attach_xvfb
   end
 
   # Switches to the headless server
@@ -119,6 +117,35 @@ class Headless
   end
 
 private
+
+  def attach_xvfb
+    # TODO this loop isn't elegant enough
+    success = false
+    while !success && @display<10000
+      begin
+        if !xvfb_running?
+          launch_xvfb
+          success=true
+        else
+          success = @reuse_display
+        end
+      rescue Errno::EPERM
+        # No permission to read pid file
+        success = false
+      end
+
+      # TODO this is crufty
+      if @autopick_display
+        @display += 1 unless success
+      else
+        break
+      end
+    end
+
+    unless success
+      raise Headless::Exception.new("Display :#{display} is already taken and reuse=false")
+    end
+  end
 
   def launch_xvfb
     #TODO error reporting

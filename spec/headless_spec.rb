@@ -6,7 +6,7 @@ describe Headless do
     stub_environment
   end
 
-  context "instaniation" do
+  context "instantiation" do
     context "when Xvfb is not installed" do
       before do
         Headless::CliUtil.stub!(:application_exists?).and_return(false)
@@ -33,16 +33,63 @@ describe Headless do
 
     context "when Xvfb is already running" do
       before do
-        Headless::CliUtil.stub!(:read_pid).and_return(31337)
+        Headless::CliUtil.stub!(:read_pid).with('/tmp/.X99-lock').and_return(31337)
+        Headless::CliUtil.stub!(:read_pid).with('/tmp/.X100-lock').and_return(nil)
       end
 
-      it "raises an error if reuse display is not allowed" do
-        lambda { Headless.new(:reuse => false) }.should raise_error(Headless::Exception)
+      context "and display reuse is allowed" do
+        let(:options) { {:reuse => true} }
+
+        it "should reuse the existing Xvfb" do
+          Headless.new(options).display.should == 99
+        end
+      end
+      
+      context "and display reuse is not allowed" do
+        let(:options) { {:reuse => false} }
+        
+        it "should pick the next available display number" do
+          Headless.new(options).display.should == 100
+        end
+
+        context "and display number is explicitly set" do
+          let(:options) { {:reuse => false, :display => 99} }
+
+          it "should fail with an exception" do
+            lambda { Headless.new(options) }.should raise_error(Headless::Exception)
+          end
+
+          context "and autopicking is allowed" do
+            let(:options) { {:reuse => false, :display => 99, :autopick => true} }
+
+            it "should pick the next available display number" do
+              Headless.new(options).display.should == 100
+            end
+          end
+        end
+      end
+    end
+
+    context 'when Xvfb is started, but by another user' do
+      before do
+        Headless::CliUtil.stub!(:read_pid).with('/tmp/.X99-lock') { raise Errno::EPERM }
+        Headless::CliUtil.stub!(:read_pid).with('/tmp/.X100-lock').and_return(nil)
       end
 
-      it "doesn't raise an error if reuse display is allowed" do
-        lambda { Headless.new(:reuse => true) }.should_not raise_error(Headless::Exception)
-        lambda { Headless.new }.should_not raise_error(Headless::Exception)
+      context "and display autopicking is not allowed" do
+        let(:options) { {:autopick => false} }
+
+        it "should fail with and exception" do
+          lambda { Headless.new(options) }.should raise_error(Headless::Exception)
+        end
+      end
+
+      context "and display autopicking is allowed" do
+        let(:options) { {:autopick => true} }
+
+        it "should pick the next display number" do
+          Headless.new(options).display.should == 100
+        end
       end
     end
   end
