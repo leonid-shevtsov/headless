@@ -23,6 +23,15 @@ describe Headless::Vnc do
       recorder = Headless::Vnc.new(99)
       recorder.start
     end
+
+    it "should not start x11vnc if it's already running" do
+      Headless::CliUtil.stub(:path_to, 'x11vnc').and_return('x11vnc')
+      Headless::CliUtil.stub(:read_pid).and_return('123')
+      Headless::CliUtil.should_not_receive(:fork_process)
+
+      recorder = Headless::Vnc.new(99)
+      recorder.start
+    end
   end
 
   context "stop" do

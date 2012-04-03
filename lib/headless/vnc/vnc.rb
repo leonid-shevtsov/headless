@@ -4,6 +4,14 @@ class Headless
   class Vnc
     attr_accessor :pid_file_path, :log_file_path
 
+    def vnc_running?
+      !!read_vnc_pid
+    end
+
+    def read_vnc_pid
+      CliUtil.read_pid(@pid_file_path)
+    end
+
     def initialize(display, options = {})
       CliUtil.ensure_application_exists!('x11vnc', 'x11vnc not found on your system. Install it with sudo apt-get install x11vnc')
 
@@ -14,11 +22,13 @@ class Headless
     end
 
     def start
-      CliUtil.fork_process("#{CliUtil.path_to('x11vnc')} -display :#{@display} -N -nopw -viewonly -shared -forever -listen localhost", @pid_file_path, @log_file_path)
-      at_exit do
-        exit_status = $!.status if $!.is_a?(SystemExit)
-        stop
-        exit exit_status if exit_status
+      unless vnc_running?
+        CliUtil.fork_process("#{CliUtil.path_to('x11vnc')} -display :#{@display} -N -nopw -viewonly -shared -forever -listen localhost", @pid_file_path, @log_file_path)
+        at_exit do
+          exit_status = $!.status if $!.is_a?(SystemExit)
+          stop
+          exit exit_status if exit_status
+        end
       end
     end
 
