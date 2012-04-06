@@ -23,7 +23,7 @@ class Headless
 
     def start
       unless vnc_running?
-        CliUtil.fork_process("#{CliUtil.path_to('x11vnc')} -display :#{@display} -N -nopw -viewonly -shared -forever -listen localhost", @pid_file_path, @log_file_path)
+        CliUtil.fork_process("#{CliUtil.path_to('x11vnc')} -display :#{@display} -N -nopw -viewonly -shared -forever", @pid_file_path, @log_file_path)
         at_exit do
           exit_status = $!.status if $!.is_a?(SystemExit)
           stop

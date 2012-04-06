@@ -18,7 +18,7 @@ describe Headless::Vnc do
   describe "start" do
     it "starts x11vnc" do
       Headless::CliUtil.stub(:path_to, 'x11vnc').and_return('x11vnc')
-      Headless::CliUtil.should_receive(:fork_process).with(/x11vnc -display :99 -N -nopw -viewonly -shared -forever -listen localhost/, "/tmp/.headless_vnc_99.pid", '/dev/null')
+      Headless::CliUtil.should_receive(:fork_process).with(/x11vnc -display :99 -N -nopw -viewonly -shared -forever/, "/tmp/.headless_vnc_99.pid", '/dev/null')
 
       recorder = Headless::Vnc.new(99)
       recorder.start
