@@ -59,6 +59,27 @@ Running cucumber headless is now as simple as adding a before and after hook in 
       headless.start
     end
 
+## Running tests in parallel
+
+If you have multiple threads running acceptance tests in parallel, you want to spawn Headless before forking, and then reuse that instance with `destroy_at_exit: false`.
+You can even spawn a Headless instance in one ruby script, and then reuse the same instance in other scripts by specifying the same display number and `reuse: true`.
+
+    # spawn_headless.rb
+    Headless.new(display: 100, destroy_at_exit: false).start
+
+
+    # test_suite_that_could_be_ran_multiple_times.rb
+    headless = Headless.new(display: 100, reuse: true, destroy_at_exit: false)
+    # Xvfb is already started by the first script
+
+    # reap_headless.rb 
+    headless = Headless.new(display: 100, reuse: true)
+    headless.destroy
+
+
+
+    
+
 ## Cucumber with wkhtmltopdf
 
 _Note: this is true for other programs which may use headless at the same time as cucumber is running_
