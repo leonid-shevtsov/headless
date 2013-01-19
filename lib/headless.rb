@@ -102,6 +102,7 @@ class Headless
     headless = Headless.new(options)
     headless.start
     yield headless
+  ensure
     headless.destroy
   end
   class <<self; alias_method :ly, :run; end
