@@ -15,11 +15,11 @@ require 'headless/video/video_recorder'
 #   require 'rubygems'
 #   require 'headless'
 #   require 'selenium-webdriver'
-# 
+#
 #   Headless.ly do
 #     driver = Selenium::WebDriver.for :firefox
 #     driver.navigate.to 'http://google.com'
-#     puts driver.title 
+#     puts driver.title
 #   end
 #
 # Object mode:
@@ -33,7 +33,7 @@ require 'headless/video/video_recorder'
 #
 #   driver = Selenium::WebDriver.for :firefox
 #   driver.navigate.to 'http://google.com'
-#   puts driver.title 
+#   puts driver.title
 #
 #   headless.destroy
 #--
@@ -42,6 +42,7 @@ require 'headless/video/video_recorder'
 class Headless
 
   DEFAULT_DISPLAY_NUMBER = 99
+  MAX_DISPLAY_NUMBER = 10_000
   DEFAULT_DISPLAY_DIMENSIONS = '1280x1024x24'
 
   class Exception < RuntimeError
@@ -120,38 +121,28 @@ class Headless
 private
 
   def attach_xvfb
-    # TODO this loop isn't elegant enough
-    success = false
-    while !success && @display<10000
+    possible_display_set = @autopick_display ? @display..MAX_DISPLAY_NUMBER : Array(@display)
+    pick_available_display(possible_display_set, @reuse_display)
+  end
+
+  def pick_available_display(display_set, can_reuse)
+    display_set.each do |display_number|
+      @display = display_number
       begin
-        if !xvfb_running?
-          launch_xvfb
-          success=true
-        else
-          success = @reuse_display
-        end
-      rescue Errno::EPERM
-        # No permission to read pid file
-        success = false
-      end
-
-      # TODO this is crufty
-      if @autopick_display
-        @display += 1 unless success
-      else
-        break
+        return true if xvfb_running? && can_reuse
+        return true if !xvfb_running? && launch_xvfb
+      rescue Errno::EPERM # display not accessible
+        next
       end
     end
-
-    unless success
-      raise Headless::Exception.new("Display :#{display} is already taken and reuse=false")
-    end
+    raise Headless::Exception.new("Could not find an available display")
   end
 
   def launch_xvfb
     #TODO error reporting
     result = system "#{CliUtil.path_to("Xvfb")} :#{display} -screen 0 #{dimensions} -ac >/dev/null 2>&1 &"
     raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless result
+    return true
   end
 
   def xvfb_running?
@@ -165,7 +156,7 @@ private
   def read_xvfb_pid
     CliUtil.read_pid(pid_filename)
   end
-    
+
   def hook_at_exit
     unless @at_exit_hook_installed
       @at_exit_hook_installed = true

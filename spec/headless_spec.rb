@@ -44,10 +44,10 @@ describe Headless do
           Headless.new(options).display.should == 99
         end
       end
-      
+
       context "and display reuse is not allowed" do
         let(:options) { {:reuse => false} }
-        
+
         it "should pick the next available display number" do
           Headless.new(options).display.should == 100
         end
