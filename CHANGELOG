@@ -1,3 +1,8 @@
+## 1.0.0 (2013-01-28)
+
+* bugfix release
+* version number compliant to the [semantic versioning system](http://semver.org)
+
 ## 0.3.1 (2012-03-29)
 
 * added autopicking of display number, if the requested one is already taken
