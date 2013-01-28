@@ -47,6 +47,9 @@ class Headless
   class Exception < RuntimeError
   end
 
+  class DisplayReuseError < RuntimeError
+  end
+
   # The display number
   attr_reader :display
 
@@ -121,30 +124,16 @@ private
 
   def attach_xvfb
     # TODO this loop isn't elegant enough
-    success = false
-    while !success && @display<10000
-      begin
-        if !xvfb_running?
-          launch_xvfb
-          success=true
-        else
-          success = @reuse_display
-        end
-      rescue Errno::EPERM
-        # No permission to read pid file
-        success = false
-      end
-
-      # TODO this is crufty
-      if @autopick_display
-        @display += 1 unless success
+    begin
+      if xvfb_running?
+        raise DisplayReuseError unless @reuse_display
       else
-        break
+        launch_xvfb
       end
-    end
-
-    unless success
-      raise Headless::Exception.new("Display :#{display} is already taken and reuse=false")
+    rescue Errno::EPERM, DisplayReuseError
+      # No permission to read pid file
+      raise Headless::Exception.new("Display :#{display} is already taken and reuse=false") unless @autopick_display
+      retry if (@display += 1) < 10000
     end
   end
 
