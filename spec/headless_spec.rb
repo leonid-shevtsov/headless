@@ -144,6 +144,19 @@ describe Headless do
     end
   end
 
+  context "#vnc" do
+    let(:headless) { Headless.new }
+
+    it "returns a vnc" do
+      headless.vnc.should be_a_kind_of(Headless::Vnc)
+    end
+
+    it "returns the same instance" do
+      vnc = headless.vnc
+      headless.vnc.should be_eql(vnc)
+    end
+  end
+
   context "#take_screenshot" do
     let(:headless) { Headless.new }
 

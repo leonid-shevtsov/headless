@@ -1,5 +1,6 @@
 require 'headless/cli_util'
 require 'headless/video/video_recorder'
+require 'headless/vnc/vnc'
 
 # A class incapsulating the creation and usage of a headless X server
 #
@@ -110,6 +111,10 @@ class Headless
 
   def video
     @video_recorder ||= VideoRecorder.new(display, dimensions, @video_capture_options)
+  end
+
+  def vnc
+    @vnc ||= Vnc.new(display)
   end
 
   def take_screenshot(file_path)
