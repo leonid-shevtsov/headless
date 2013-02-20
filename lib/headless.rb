@@ -44,6 +44,8 @@ class Headless
   DEFAULT_DISPLAY_NUMBER = 99
   MAX_DISPLAY_NUMBER = 10_000
   DEFAULT_DISPLAY_DIMENSIONS = '1280x1024x24'
+  # How long should we wait for Xvfb to open a display, before assuming that it is frozen (in seconds)
+  XVFB_LAUNCH_TIMEOUT = 10
 
   class Exception < RuntimeError
   end
@@ -72,6 +74,7 @@ class Headless
     @video_capture_options = options.fetch(:video, {})
     @destroy_at_exit = options.fetch(:destroy_at_exit, true)
 
+    # FIXME Xvfb launch should not happen inside the constructor
     attach_xvfb
   end
 
@@ -142,7 +145,16 @@ private
     #TODO error reporting
     result = system "#{CliUtil.path_to("Xvfb")} :#{display} -screen 0 #{dimensions} -ac >/dev/null 2>&1 &"
     raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless result
+    ensure_xvfb_is_running
     return true
+  end
+
+  def ensure_xvfb_is_running
+    start_time = Time.now
+    begin
+      sleep 0.01 # to avoid cpu hogging
+      raise Headless::Exception.new("Xvfb is frozen") if (Time.now-start_time)>=XVFB_LAUNCH_TIMEOUT
+    end while !xvfb_running?
   end
 
   def xvfb_running?
@@ -168,3 +180,4 @@ private
     end
   end
 end
+
