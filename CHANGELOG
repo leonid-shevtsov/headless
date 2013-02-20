@@ -1,3 +1,7 @@
+## 1.0.1 (2013-02-20)
+
+* when starting, wait for Xvfb to launch (fixed issue #33)
+
 ## 1.0.0 (2013-01-28)
 
 * bugfix release
