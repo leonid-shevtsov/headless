@@ -7,7 +7,7 @@ describe Headless::VideoRecorder do
 
   describe "instantiation" do
     before do
-      Headless::CliUtil.stub!(:application_exists?).and_return(false)
+      Headless::CliUtil.stub(:application_exists?).and_return(false)
     end
 
     it "throws an error if ffmpeg is not installed" do
@@ -67,7 +67,7 @@ describe Headless::VideoRecorder do
 private
 
   def stub_environment
-    Headless::CliUtil.stub!(:application_exists?).and_return(true)
-    Headless::CliUtil.stub!(:fork_process).and_return(true)
+    Headless::CliUtil.stub(:application_exists?).and_return(true)
+    Headless::CliUtil.stub(:fork_process).and_return(true)
   end
 end
