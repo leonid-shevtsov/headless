@@ -16,71 +16,77 @@ Documentation is available at [rdoc.info](http://rdoc.info/projects/leonid-shevt
 
 On Debian/Ubuntu:
 
-    sudo apt-get install xvfb
-    gem install headless
+```sh
+sudo apt-get install xvfb
+gem install headless
+```
 
 ## Usage
 
 Block mode:
 
-    require 'rubygems'
-    require 'headless'
-    require 'selenium-webdriver'
+```ruby
+require 'rubygems'
+require 'headless'
+require 'selenium-webdriver'
 
-    Headless.ly do
-      driver = Selenium::WebDriver.for :firefox
-      driver.navigate.to 'http://google.com'
-      puts driver.title 
-    end
+Headless.ly do
+  driver = Selenium::WebDriver.for :firefox
+  driver.navigate.to 'http://google.com'
+  puts driver.title 
+end
+```
 
 Object mode:
 
-    require 'rubygems'
-    require 'headless'
-    require 'selenium-webdriver'
+```ruby
+require 'rubygems'
+require 'headless'
+require 'selenium-webdriver'
 
-    headless = Headless.new
-    headless.start
+headless = Headless.new
+headless.start
 
-    driver = Selenium::WebDriver.for :firefox
-    driver.navigate.to 'http://google.com'
-    puts driver.title
+driver = Selenium::WebDriver.for :firefox
+driver.navigate.to 'http://google.com'
+puts driver.title
 
-    headless.destroy
+headless.destroy
+```
 
 ## Cucumber
 
 Running cucumber headless is now as simple as adding a before and after hook in `features/support/env.rb`:
 
+```ruby
+# change the condition to fit your setup
+if Capybara.current_driver == :selenium
+  require 'headless'
 
-    # change the condition to fit your setup
-    if Capybara.current_driver == :selenium
-      require 'headless'
-
-      headless = Headless.new
-      headless.start
-    end
+  headless = Headless.new
+  headless.start
+end
+```
 
 ## Running tests in parallel
 
 If you have multiple threads running acceptance tests in parallel, you want to spawn Headless before forking, and then reuse that instance with `destroy_at_exit: false`.
 You can even spawn a Headless instance in one ruby script, and then reuse the same instance in other scripts by specifying the same display number and `reuse: true`.
 
-    # spawn_headless.rb
-    Headless.new(display: 100, destroy_at_exit: false).start
+```ruby
+# spawn_headless.rb
+Headless.new(display: 100, destroy_at_exit: false).start
 
 
-    # test_suite_that_could_be_ran_multiple_times.rb
-    headless = Headless.new(display: 100, reuse: true, destroy_at_exit: false)
-    # Xvfb is already started by the first script
+# test_suite_that_could_be_ran_multiple_times.rb
+headless = Headless.new(display: 100, reuse: true, destroy_at_exit: false)
+# Xvfb is already started by the first script
 
-    # reap_headless.rb 
-    headless = Headless.new(display: 100, reuse: true)
-    headless.destroy
-
-
-
-    
+# reap_headless.rb 
+headless = Headless.new(display: 100, reuse: true)
+headless.destroy
+```
+ 
 
 ## Cucumber with wkhtmltopdf
 
@@ -88,29 +94,33 @@ _Note: this is true for other programs which may use headless at the same time a
 
 When wkhtmltopdf is using Headless, and cucumber is invoking a block of code which uses a headless session, make sure to override the default display of cucumber to retain browser focus. Assuming wkhtmltopdf is using the default display of 99, make sure to set the display to a value != 99 in `features/support/env.rb` file. This may be the cause of `Connection refused - connect(2) (Errno::ECONNREFUSED)`.
 
-    headless = Headless.new(:display => '100')
-    headless.start
+```ruby
+headless = Headless.new(:display => '100')
+headless.start
+```
 
 ## Capturing video
 
 Video is captured using `ffmpeg`. You can install it on Debian/Ubuntu via `sudo apt-get install ffmpeg` or on OS X via `brew install ffmpeg`. You can capture video continuously or capture scenarios separately. Here is typical use case:
 
-    require 'headless'
+```ruby
+require 'headless'
 
-    headless = Headless.new
-    headless.start
+headless = Headless.new
+headless.start
 
-    Before do
-      headless.video.start_capture
-    end
+Before do
+  headless.video.start_capture
+end
 
-    After do |scenario|
-      if scenario.failed?
-        headless.video.stop_and_save("/tmp/#{BUILD_ID}/#{scenario.name.split.join("_")}.mov")
-      else
-        headless.video.stop_and_discard
-      end
-    end
+After do |scenario|
+  if scenario.failed?
+    headless.video.stop_and_save("/tmp/#{BUILD_ID}/#{scenario.name.split.join("_")}.mov")
+  else
+    headless.video.stop_and_discard
+  end
+end
+```
 
 ## Taking screenshots
 
@@ -123,3 +133,4 @@ Images are captured using `import` utility which is part of `imagemagick` librar
 ---
 
 &copy; 2011 Leonid Shevtsov, released under the MIT license
+

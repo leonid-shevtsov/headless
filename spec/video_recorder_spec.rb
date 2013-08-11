@@ -7,7 +7,7 @@ describe Headless::VideoRecorder do
 
   describe "instantiation" do
     before do
-      Headless::CliUtil.stub!(:application_exists?).and_return(false)
+      Headless::CliUtil.stub(:application_exists?).and_return(false)
     end
 
     it "throws an error if ffmpeg is not installed" do
@@ -17,7 +17,7 @@ describe Headless::VideoRecorder do
 
   describe "#capture" do
     it "starts ffmpeg" do
-      Headless::CliUtil.stub(:path_to, 'ffmpeg').and_return('ffmpeg')
+      Headless::CliUtil.stub(:path_to).and_return('ffmpeg')
       Headless::CliUtil.should_receive(:fork_process).with(/ffmpeg -y -r 30 -g 600 -s 1024x768x32 -f x11grab -i :99 -vcodec qtrle/, "/tmp/.headless_ffmpeg_99.pid", '/dev/null')
 
       recorder = Headless::VideoRecorder.new(99, "1024x768x32")
@@ -25,7 +25,7 @@ describe Headless::VideoRecorder do
     end
 
     it "starts ffmpeg with specified codec" do
-      Headless::CliUtil.stub(:path_to, 'ffmpeg').and_return('ffmpeg')
+      Headless::CliUtil.stub(:path_to).and_return('ffmpeg')
       Headless::CliUtil.should_receive(:fork_process).with(/ffmpeg -y -r 30 -g 600 -s 1024x768x32 -f x11grab -i :99 -vcodec libvpx/, "/tmp/.headless_ffmpeg_99.pid", '/dev/null')
 
       recorder = Headless::VideoRecorder.new(99, "1024x768x32", {:codec => 'libvpx'})
@@ -67,7 +67,7 @@ describe Headless::VideoRecorder do
 private
 
   def stub_environment
-    Headless::CliUtil.stub!(:application_exists?).and_return(true)
-    Headless::CliUtil.stub!(:fork_process).and_return(true)
+    Headless::CliUtil.stub(:application_exists?).and_return(true)
+    Headless::CliUtil.stub(:fork_process).and_return(true)
   end
 end
