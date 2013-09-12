@@ -77,10 +77,8 @@ You can even spawn a Headless instance in one ruby script, and then reuse the sa
 # spawn_headless.rb
 Headless.new(display: 100, destroy_at_exit: false).start
 
-
 # test_suite_that_could_be_ran_multiple_times.rb
-headless = Headless.new(display: 100, reuse: true, destroy_at_exit: false)
-# Xvfb is already started by the first script
+Headless.new(display: 100, reuse: true, destroy_at_exit: false).start
 
 # reap_headless.rb 
 headless = Headless.new(display: 100, reuse: true)
