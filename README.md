@@ -132,3 +132,7 @@ Images are captured using `import` utility which is part of `imagemagick` librar
 
 &copy; 2011 Leonid Shevtsov, released under the MIT license
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/leonid-shevtsov/headless/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
