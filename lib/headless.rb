@@ -107,7 +107,7 @@ class Headless
     headless.start
     yield headless
   ensure
-    headless.destroy
+    headless && headless.destroy
   end
   class <<self; alias_method :ly, :run; end
 
