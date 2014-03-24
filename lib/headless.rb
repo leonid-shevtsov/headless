@@ -145,7 +145,6 @@ private
 
   def launch_xvfb
     #TODO error reporting
-    a = "#{CliUtil.path_to("Xvfb")} :#{display} -screen 0 #{dimensions} -ac >/dev/null 2>&1 &"
     result = system "#{CliUtil.path_to("Xvfb")} :#{display} -screen 0 #{dimensions} -ac >/dev/null 2>&1 &"
     raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless result
     ensure_xvfb_is_running
