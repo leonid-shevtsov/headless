@@ -16,6 +16,8 @@ class Headless
       @codec = options.fetch(:codec, "qtrle")
       @frame_rate = options.fetch(:frame_rate, 30)
       @provider = options.fetch(:provider, :libav)  # or :ffmpeg
+      @extra = options.fetch(:extra, [])
+      @extra = [ @extra ] unless @extra.kind_of? Array
     end
 
     def capture_running?
@@ -31,7 +33,9 @@ class Headless
         dimensions = @dimensions.match(/^(\d+x\d+)/)[0]
       end
 
-      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r #{@frame_rate} #{group_of_pic_size_option} -s #{dimensions} -f x11grab -i :#{@display} -vcodec #{@codec} #{@tmp_file_path}", @pid_file_path, @log_file_path)
+      extra = @extra.join(' ')
+
+      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r #{@frame_rate} #{group_of_pic_size_option} -s #{dimensions} -f x11grab -i :#{@display} -vcodec #{@codec} #{extra} #{@tmp_file_path}", @pid_file_path, @log_file_path)
       at_exit do
         exit_status = $!.status if $!.is_a?(SystemExit)
         stop_and_discard
