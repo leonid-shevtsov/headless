@@ -15,6 +15,7 @@ class Headless
       @log_file_path = options.fetch(:log_file_path, "/dev/null")
       @codec = options.fetch(:codec, "qtrle")
       @frame_rate = options.fetch(:frame_rate, 30)
+      @provider = options.fetch(:provider, :libav)  # or :ffmpeg
     end
 
     def capture_running?
@@ -22,7 +23,15 @@ class Headless
     end
 
     def start_capture
-      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r #{@frame_rate} -g 600 -s #{@dimensions} -f x11grab -i :#{@display} -vcodec #{@codec} #{@tmp_file_path}", @pid_file_path, @log_file_path)
+      if @provider == :libav
+        group_of_pic_size_option = '-g 600'
+        dimensions = @dimensions
+      else
+        group_of_pic_size_option = ''
+        dimensions = @dimensions.match(/^(\d+x\d+)/)[0]
+      end
+
+      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r #{@frame_rate} #{group_of_pic_size_option} -s #{dimensions} -f x11grab -i :#{@display} -vcodec #{@codec} #{@tmp_file_path}", @pid_file_path, @log_file_path)
       at_exit do
         exit_status = $!.status if $!.is_a?(SystemExit)
         stop_and_discard

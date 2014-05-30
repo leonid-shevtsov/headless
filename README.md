@@ -120,6 +120,23 @@ After do |scenario|
 end
 ```
 
+### Video options
+
+When initiating Headless you may pass a hash with video options.
+
+```ruby
+headless = Headless.new(:video => { :frame_rate => 12, :codec => 'libx264' })
+```
+
+Available options:
+
+* :codec - codec to be used by ffmpeg
+* :frame_rate - frame rate of video capture
+* :provider - ffmpeg provider - either :libav (default) or :ffmpeg
+* :pid_file_path - path to ffmpeg pid file, default: "/tmp/.headless_ffmpeg_#{@display}.pid"
+* :tmp_file_path - path to tmp video file,  default: "/tmp/.headless_ffmpeg_#{@display}.mov"
+* :log_file_path - ffmpeg log file,         default: "/dev/null"
+
 ## Taking screenshots
 
 Images are captured using `import` utility which is part of `imagemagick` library. You can install it on Ubuntu via `sudo apt-get install imagemagick`. You can call `headless.take_screenshot` at any time. You have to supply full path to target file. File format is determined by supplied file extension.
