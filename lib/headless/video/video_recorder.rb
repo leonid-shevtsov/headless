@@ -8,7 +8,7 @@ class Headless
       CliUtil.ensure_application_exists!('ffmpeg', 'Ffmpeg not found on your system. Install it with sudo apt-get install ffmpeg')
 
       @display = display
-      @dimensions = dimensions
+      @dimensions = dimensions[/.+(?=x)/]
 
       @pid_file_path = options.fetch(:pid_file_path, "/tmp/.headless_ffmpeg_#{@display}.pid")
       @tmp_file_path = options.fetch(:tmp_file_path, "/tmp/.headless_ffmpeg_#{@display}.mov")
