@@ -43,6 +43,10 @@ describe Headless do
         it "should reuse the existing Xvfb" do
           Headless.new(options).display.should == 99
         end
+
+        it "should not be destroyed at exit by default" do
+          Headless.new(options).destroy_at_exit?.should be(false)
+        end
       end
 
       context "and display reuse is not allowed" do
@@ -79,7 +83,7 @@ describe Headless do
       context "and display autopicking is not allowed" do
         let(:options) { {:autopick => false} }
 
-        it "should fail with and exception" do
+        it "should fail with an exception" do
           lambda { Headless.new(options) }.should raise_error(Headless::Exception)
         end
       end
