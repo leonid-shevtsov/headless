@@ -116,8 +116,8 @@ class Headless
   end
 
   def take_screenshot(file_path, options={})
-    using = options.fetch(:using, :import)
-    if using == :import
+    using = options.fetch(:using, :imagemagick)
+    if using == :imagemagick
       CliUtil.ensure_application_exists!('import', "imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick")
       system "#{CliUtil.path_to('import')} -display localhost:#{display} -window root #{file_path}"
     elsif using == :xwd

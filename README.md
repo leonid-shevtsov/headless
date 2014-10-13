@@ -144,7 +144,7 @@ Call `headless.take_screenshot` to take a screenshot. It needs two arguments:
 
 - file_path - path where the image should be stored
 - options - options, that can be:
-    :using - :import or :xwd, :import is default, if :import is used, image format is determined by file_path extension
+    :using - :imagemagick or :xwd, :imagemagick is default, if :imagemagick is used, image format is determined by file_path extension
 
 Screenshots can be taken by either using `import` (part of `imagemagick` library) or `xwd` utility.
 
