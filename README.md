@@ -162,7 +162,6 @@ To install the necessary libraries on ubuntu:
 ## Contributors
 
 * [Igor Afonov](http://iafonov.github.com) - video and screenshot capturing functionality.
-* [Yurie Nagorny](https://github.com/ynagorny) - xwd optiuon for screenshot taking
 
 ---
 
