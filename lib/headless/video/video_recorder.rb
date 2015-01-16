@@ -22,7 +22,7 @@ class Headless
     end
 
     def start_capture
-      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r #{@frame_rate} -g 600 -s #{@dimensions} -f x11grab -i :#{@display} -vcodec #{@codec} #{@tmp_file_path}", @pid_file_path, @log_file_path)
+      CliUtil.fork_process("#{CliUtil.path_to('ffmpeg')} -y -r #{@frame_rate} -s #{@dimensions} -f x11grab -i :#{@display} -g 600 -vcodec #{@codec} #{@tmp_file_path}", @pid_file_path, @log_file_path)
       at_exit do
         exit_status = $!.status if $!.is_a?(SystemExit)
         stop_and_discard
