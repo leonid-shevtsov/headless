@@ -53,11 +53,13 @@ class Headless
           # Process.wait tried to wait on a dead process
         end
       end
-      
-      begin
-        FileUtils.rm pid_filename
-      rescue Errno::ENOENT
-        # pid file already removed
+
+      unless options[:preserve_pid_file]
+        begin
+          FileUtils.rm pid_filename
+        rescue Errno::ENOENT
+          # pid file already removed
+        end
       end
     end
   end

@@ -5,8 +5,6 @@ class Headless
     attr_accessor :pid_file_path, :tmp_file_path, :log_file_path
 
     def initialize(display, dimensions, options = {})
-      CliUtil.ensure_application_exists!('ffmpeg', 'Ffmpeg not found on your system. Install it with sudo apt-get install ffmpeg')
-
       @display = display
       @dimensions = dimensions[/.+(?=x)/]
 
@@ -17,31 +15,12 @@ class Headless
       @frame_rate = options.fetch(:frame_rate, 30)
       @provider = options.fetch(:provider, :libav)  # or :ffmpeg
       @extra = Array(options.fetch(:extra, []))
+
+      CliUtil.ensure_application_exists!(provider_binary, "#{provider_binary} not found on your system. Install it or change video recorder provider")
     end
 
     def capture_running?
       CliUtil.read_pid @pid_file_path
-    end
-
-    def command_line_for_capture
-      if @provider == :libav
-        group_of_pic_size_option = '-g 600'
-        dimensions = @dimensions
-      else
-        group_of_pic_size_option = nil
-        dimensions = @dimensions.match(/^(\d+x\d+)/)[0]
-      end
-
-      ([
-        CliUtil.path_to('ffmpeg'),
-        "-y",
-        "-r #{@frame_rate}",
-        "-s #{dimensions}",
-        "-f x11grab",
-        "-i :#{@display}",
-        group_of_pic_size_option,
-        "-vcodec #{@codec}"
-      ].compact + @extra + [@tmp_file_path]).join(' ')
     end
 
     def start_capture
@@ -72,6 +51,33 @@ class Headless
       rescue Errno::ENOENT
         # that's ok if the file doesn't exist
       end
+    end
+
+    private
+
+    def provider_binary
+      @provider==:libav ? 'avconv' : 'ffmpeg'
+    end
+
+    def command_line_for_capture
+      if @provider == :libav
+        group_of_pic_size_option = '-g 600'
+        dimensions = @dimensions
+      else
+        group_of_pic_size_option = nil
+        dimensions = @dimensions.match(/^(\d+x\d+)/)[0]
+      end
+
+      ([
+        CliUtil.path_to(provider_binary),
+        "-y",
+        "-r #{@frame_rate}",
+        "-s #{dimensions}",
+        "-f x11grab",
+        "-i :#{@display}",
+        group_of_pic_size_option,
+        "-vcodec #{@codec}"
+      ].compact + @extra + [@tmp_file_path]).join(' ')
     end
   end
 end
