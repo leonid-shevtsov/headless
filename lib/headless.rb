@@ -56,14 +56,23 @@ class Headless
   attr_reader :dimensions
   attr_reader :xvfb_launch_timeout
 
-  # Creates a new headless server, but does NOT switch to it immediately. Call #start for that
+  # Creates a new headless server, but does NOT switch to it immediately.
+  # Call #start for that
   #
   # List of available options:
   # * +display+ (default 99) - what display number to listen to;
-  # * +reuse+ (default true) - if given display server already exists, should we use it or try another?
-  # * +autopick+ (default true is display number isn't explicitly set) - if Headless should automatically pick a display, or fail if the given one is not available.
-  # * +dimensions+ (default 1280x1024x24) - display dimensions and depth. Not all combinations are possible, refer to +man Xvfb+.
-  # * +destroy_at_exit+ (default true) - if a display is started but not stopped, should it be destroyed when the script finishes?
+  # * +reuse+ (default true) - if given display server already exists,
+  #   should we use it or try another?
+  # * +autopick+ (default true is display number isn't explicitly set) - if
+  #   Headless should automatically pick a display, or fail if the given one is
+  #   not available.
+  # * +dimensions+ (default 1280x1024x24) - display dimensions and depth. Not
+  #   all combinations are possible, refer to +man Xvfb+.
+  # * +destroy_at_exit+ (default true) - if a display is started but not
+  #   stopped, should it be destroyed when the script finishes?
+  # * +xvfb_launch_timeout+ - how long should we wait for Xvfb to open a
+  #   display, before assuming that it is frozen (in seconds, default is 10)
+  # * +video+ - options to be passed to the ffmpeg video recorder
   def initialize(options = {})
     CliUtil.ensure_application_exists!('Xvfb', 'Xvfb not found on your system')
 
