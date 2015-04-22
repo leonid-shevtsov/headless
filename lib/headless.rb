@@ -55,6 +55,7 @@ class Headless
 
   # The display dimensions
   attr_reader :dimensions
+  attr_reader :xvfb_launch_timeout
 
   # Creates a new headless server, but does NOT switch to it immediately. Call #start for that
   #
@@ -68,6 +69,7 @@ class Headless
     CliUtil.ensure_application_exists!('Xvfb', 'Xvfb not found on your system')
 
     @display = options.fetch(:display, DEFAULT_DISPLAY_NUMBER).to_i
+    @xvfb_launch_timeout = options.fetch(:xvfb_launch_timeout, XVFB_LAUNCH_TIMEOUT).to_i
     @autopick_display = options.fetch(:autopick, !options.key?(:display))
     @reuse_display = options.fetch(:reuse, true)
     @dimensions = options.fetch(:dimensions, DEFAULT_DISPLAY_DIMENSIONS)
@@ -153,7 +155,7 @@ private
     start_time = Time.now
     begin
       sleep 0.01 # to avoid cpu hogging
-      raise Headless::Exception.new("Xvfb is frozen") if (Time.now-start_time)>=XVFB_LAUNCH_TIMEOUT
+      raise Headless::Exception.new("Xvfb is frozen") if (Time.now-start_time)>=@xvfb_launch_timeout
     end while !xvfb_running?
   end
 
