@@ -120,10 +120,45 @@ After do |scenario|
 end
 ```
 
+### Video options
+
+When initiating Headless you may pass a hash with video options.
+
+```ruby
+headless = Headless.new(:video => { :frame_rate => 12, :codec => 'libx264' })
+```
+
+Available options:
+
+* :codec - codec to be used by ffmpeg
+* :frame_rate    - frame rate of video capture
+* :provider      - ffmpeg provider - either :libav (default) or :ffmpeg
+* :pid_file_path - path to ffmpeg pid file, default: "/tmp/.headless_ffmpeg_#{@display}.pid"
+* :tmp_file_path - path to tmp video file,  default: "/tmp/.headless_ffmpeg_#{@display}.mov"
+* :log_file_path - ffmpeg log file,         default: "/dev/null"
+* :extra         - array of extra ffmpeg options, default: [] 
+
 ## Taking screenshots
 
-Images are captured using `import` utility which is part of `imagemagick` library. You can install it on Ubuntu via `sudo apt-get install imagemagick`. You can call `headless.take_screenshot` at any time. You have to supply full path to target file. File format is determined by supplied file extension.
+Call `headless.take_screenshot` to take a screenshot. It needs two arguments:
 
+- file_path - path where the image should be stored
+- options - options, that can be:
+    :using - :imagemagick or :xwd, :imagemagick is default, if :imagemagick is used, image format is determined by file_path extension
+
+Screenshots can be taken by either using `import` (part of `imagemagick` library) or `xwd` utility.
+
+`import` captures a screenshot and saves it in the format of the specified file. It is convenient but not too fast as 
+it has to do the encoding synchronously.
+
+`xwd` will capture a screenshot very fast and store it in its own format, which can then be converted to one 
+of other picture formats using, for example, netpbm utilities - `xwdtopnm <xwd_file> | pnmtopng > capture.png`.
+
+To install the necessary libraries on ubuntu:
+
+`import` - run `sudo apt-get install imagemagick`
+`xwd` - run `sudo apt-get install X11-apps` and if you are going to use netpbm utilities for image conversion - `sudo apt-get install netpbm`
+ 
 ## Contributors
 
 * [Igor Afonov](http://iafonov.github.com) - video and screenshot capturing functionality.

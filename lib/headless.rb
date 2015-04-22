@@ -125,10 +125,17 @@ class Headless
     @video_recorder ||= VideoRecorder.new(display, dimensions, @video_capture_options)
   end
 
-  def take_screenshot(file_path)
-    CliUtil.ensure_application_exists!('import', "imagemagick not found on your system. Please install it using sudo apt-get install imagemagick")
-
-    system "#{CliUtil.path_to('import')} -display localhost:#{display} -window root #{file_path}"
+  def take_screenshot(file_path, options={})
+    using = options.fetch(:using, :imagemagick)
+    if using == :imagemagick
+      CliUtil.ensure_application_exists!('import', "imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick")
+      system "#{CliUtil.path_to('import')} -display localhost:#{display} -window root #{file_path}"
+    elsif using == :xwd
+      CliUtil.ensure_application_exists!('xwd', "xwd is not found on your system. Please install it using sudo apt-get install X11-apps")
+      system "#{CliUtil.path_to('xwd')} -display localhost:#{display} -silent -root -out #{file_path}"
+    else
+      raise Headless::Exception.new('Unknown :using option value')
+    end
   end
 
 private

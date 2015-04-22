@@ -147,18 +147,44 @@ describe Headless do
   context "#take_screenshot" do
     let(:headless) { Headless.new }
 
-    it "raises an error if imagemagick is not installed" do
-      Headless::CliUtil.stub(:application_exists?).and_return(false)
-
-      lambda { headless.take_screenshot }.should raise_error(Headless::Exception)
+    it "raises an error if unknown value for option :using is used" do
+      expect { headless.take_screenshot('a.png', :using => :teleportation) }.to raise_error(Headless::Exception)
     end
 
-    it "issues command to take screenshot" do
-      headless = Headless.new
+    it "raises an error if imagemagick is not installed, with default options" do
+      Headless::CliUtil.stub(:application_exists?).with('import').and_return(false)
 
-      Headless.any_instance.should_receive(:system)
+      expect { headless.take_screenshot('a.png') }.to raise_error(Headless::Exception)
+    end
 
+    it "raises an error if imagemagick is not installed, with using: :imagemagick" do
+      Headless::CliUtil.stub(:application_exists?).with('import').and_return(false)
+
+      expect { headless.take_screenshot('a.png', :using => :imagemagick) }.to raise_error(Headless::Exception)
+    end
+
+    it "raises an error if xwd is not installed, with using: :xwd" do
+      Headless::CliUtil.stub(:application_exists?).with('xwd').and_return(false)
+
+      expect { headless.take_screenshot('a.png', :using => :xwd) }.to raise_error(Headless::Exception)
+    end
+
+    it "issues command to take screenshot, with default options" do
+      allow(Headless::CliUtil).to receive(:path_to).with('import').and_return('path/import')
+      expect(headless).to receive(:system).with("path/import -display localhost:99 -window root /tmp/image.png")
       headless.take_screenshot("/tmp/image.png")
+    end
+
+    it "issues command to take screenshot, with using: :imagemagick" do
+      allow(Headless::CliUtil).to receive(:path_to).with('import').and_return('path/import')
+      expect(headless).to receive(:system).with("path/import -display localhost:99 -window root /tmp/image.png")
+      headless.take_screenshot("/tmp/image.png", :using => :imagemagick)
+    end
+
+    it "issues command to take screenshot, with using: :xwd" do
+      allow(Headless::CliUtil).to receive(:path_to).with('xwd').and_return('path/xwd')
+      expect(headless).to receive(:system).with("path/xwd -display localhost:99 -silent -root -out /tmp/image.png")
+      headless.take_screenshot("/tmp/image.png", :using => :xwd)
     end
   end
 
