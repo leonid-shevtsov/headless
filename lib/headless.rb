@@ -44,8 +44,7 @@ class Headless
   DEFAULT_DISPLAY_NUMBER = 99
   MAX_DISPLAY_NUMBER = 10_000
   DEFAULT_DISPLAY_DIMENSIONS = '1280x1024x24'
-  # How long should we wait for Xvfb to open a display, before assuming that it is frozen (in seconds)
-  XVFB_LAUNCH_TIMEOUT = 10
+  DEFAULT_XVFB_LAUNCH_TIMEOUT = 10
 
   class Exception < RuntimeError
   end
@@ -69,7 +68,7 @@ class Headless
     CliUtil.ensure_application_exists!('Xvfb', 'Xvfb not found on your system')
 
     @display = options.fetch(:display, DEFAULT_DISPLAY_NUMBER).to_i
-    @xvfb_launch_timeout = options.fetch(:xvfb_launch_timeout, XVFB_LAUNCH_TIMEOUT).to_i
+    @xvfb_launch_timeout = options.fetch(:xvfb_launch_timeout, DEFAULT_XVFB_LAUNCH_TIMEOUT).to_i
     @autopick_display = options.fetch(:autopick, !options.key?(:display))
     @reuse_display = options.fetch(:reuse, true)
     @dimensions = options.fetch(:dimensions, DEFAULT_DISPLAY_DIMENSIONS)
