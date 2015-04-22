@@ -62,9 +62,9 @@ class Headless
   # List of available options:
   # * +display+ (default 99) - what display number to listen to;
   # * +reuse+ (default true) - if given display server already exists, should we use it or try another?
-  # * +autopick+ (default true is display number isn't explicitly set) - if Headless should automatically pick a display, or fail if the given one is not available.
+  # * +autopick+ (default true if display number isn't explicitly set) - if Headless should automatically pick a display, or fail if the given one is not available.
   # * +dimensions+ (default 1280x1024x24) - display dimensions and depth. Not all combinations are possible, refer to +man Xvfb+.
-  # * +destroy_at_exit+ (default true) - if a display is started but not stopped, should it be destroyed when the script finishes?
+  # * +destroy_at_exit+ (default true unless reuse is true and a server is already running) - if a display is started but not stopped, should it be destroyed when the script finishes?
   def initialize(options = {})
     CliUtil.ensure_application_exists!('Xvfb', 'Xvfb not found on your system')
 
@@ -74,7 +74,9 @@ class Headless
     @reuse_display = options.fetch(:reuse, true)
     @dimensions = options.fetch(:dimensions, DEFAULT_DISPLAY_DIMENSIONS)
     @video_capture_options = options.fetch(:video, {})
-    @destroy_at_exit = options.fetch(:destroy_at_exit, true)
+
+    already_running = xvfb_running? rescue false
+    @destroy_at_exit = options.fetch(:destroy_at_exit, !(@reuse_display && already_running))
 
     # FIXME Xvfb launch should not happen inside the constructor
     attach_xvfb
@@ -96,6 +98,11 @@ class Headless
   def destroy
     stop
     CliUtil.kill_process(pid_filename)
+  end
+
+  # Whether the headless display will be destroyed when the script finishes.
+  def destroy_at_exit?
+    @destroy_at_exit
   end
 
   # Block syntax:
@@ -176,7 +183,7 @@ private
       @at_exit_hook_installed = true
       at_exit do
         exit_status = $!.status if $!.is_a?(SystemExit)
-        destroy if @destroy_at_exit
+        destroy if destroy_at_exit?
         exit exit_status if exit_status
       end
     end
