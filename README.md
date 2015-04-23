@@ -1,12 +1,12 @@
 # Headless [![Travis CI status](https://secure.travis-ci.org/leonid-shevtsov/headless.png)](http://travis-ci.org/leonid-shevtsov/headless)
 
-Headless is *the* Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding some low-level action.
-It can also capture images and video from the virtual framebuffer.
+Headless is *the* Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding the low-level action.
+It can also capture images and video from the virtual framebuffer. For example, you can record screenshots and screencasts of your failing integration specs.
 
 I created it so I can run Selenium tests in Cucumber without any shell scripting. Even more, you can go headless only when you run tests against Selenium.
 Other possible uses include pdf generation with `wkhtmltopdf`, or screenshotting.
 
-Documentation is available at [rdoc.info](http://rdoc.info/projects/leonid-shevtsov/headless)
+Documentation is available at [rubydoc.info](http://www.rubydoc.info/gems/headless)
 
 [Changelog](https://github.com/leonid-shevtsov/headless/blob/master/CHANGELOG)
 
@@ -159,15 +159,19 @@ To install the necessary libraries on ubuntu:
 `import` - run `sudo apt-get install imagemagick`
 `xwd` - run `sudo apt-get install X11-apps` and if you are going to use netpbm utilities for image conversion - `sudo apt-get install netpbm`
  
-## Contributors
+## Troubleshooting
 
-* [Igor Afonov](http://iafonov.github.com) - video and screenshot capturing functionality.
+### Display socket is taken but lock file is missing
+
+This means that there is an X server that is taking up the chosen display number, but its lock file is missing. This is an exceptional situation. Please stop the server process manually (`pkill Xvfb`) and open an issue.
+
+### Video not recording
+
+If video is not recording, and there are no visible exceptions, try passing the following option to Headless to figure out the reason: `Headless.new(video: {log_file_path: STDERR})`. In particular, there are some issues with the version of avconv packaged with Ubuntu 12.04 - an outdated release, but still in use on Travis.
+
+
+##[Contributors](https://github.com/leonid-shevtsov/headless/graphs/contributors)
 
 ---
 
-&copy; 2011 Leonid Shevtsov, released under the MIT license
-
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/leonid-shevtsov/headless/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
+&copy; 2011-2015 Leonid Shevtsov, released under the MIT license

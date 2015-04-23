@@ -1,3 +1,14 @@
+## 2.0.0 (2015-04-23)
+
+* Rewritten Xvfb launch using Process.spawn and avoiding a shell
+* Do not manually remove X11 lock file when stopping Xvfb; this isn’t conventional. Should eliminate some errors with not being able to find Xvfb
+* More informative error messages
+* Detect situation when Xvfb can’t listen to any sockets and raise corresponding error.
+* If video recorder provider is libav, use avconv binary instead of ffmpeg
+* Fixes to video recorder launch options (from @gpavlidi, @abotalov, @ynagorny, @WeAreFarmGeek)
+* Customize launch timeout (from @ShockwaveNN)
+* Properly working integration tests
+
 ## 1.0.2 (2014-06-03)
 
 * pass options correctly to ffmpeg (from @abotalov)
