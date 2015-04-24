@@ -1,17 +1,44 @@
 require 'headless'
 
+require 'tempfile'
+
 describe Headless::VideoRecorder do
   before do
     stub_environment
   end
 
   describe "instantiation" do
-    before do
+
+    it "throws an error if provider_binary is not installed" do
       allow(Headless::CliUtil).to receive(:application_exists?).and_return(false)
+      expect { Headless::VideoRecorder.new(99, "1024x768x32") }.to raise_error(Headless::Exception)
     end
 
-    it "throws an error if ffmpeg is not installed" do
-      expect { Headless::VideoRecorder.new(99, "1024x768x32") }.to raise_error(Headless::Exception)
+    it "allows provider_binary to be specified" do 
+      Tempfile.open('some_provider') do |f|
+        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg, provider_binary: f.path)
+        expect(v.provider_binary).to eq(f.path)
+      end
+    end
+
+    it "allows provider_binary to be specified" do 
+      Tempfile.open('some_provider') do |f|
+        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg, provider_binary: f.path)
+        expect(v.provider_binary).to eq(f.path)
+      end
+    end
+
+    context "provider_binary not specified" do 
+      it "assumes the provider binary is 'ffmpeg' if the provider is :ffmpeg" do 
+        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg)
+        expect(v.provider_binary).to eq("ffmpeg")
+      end
+
+      it "assumes the provider binary is 'avconv' if the provider is :libav" do 
+        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :libav)
+        expect(v.provider_binary).to eq("avconv")
+      end
+
     end
   end
 
