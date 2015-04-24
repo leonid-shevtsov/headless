@@ -4,6 +4,9 @@ class Headless
   class VideoRecorder
     attr_accessor :pid_file_path, :tmp_file_path, :log_file_path
 
+    # Allow end-users to override the path to the binary
+    attr_accessor :provider_binary
+
     def initialize(display, dimensions, options = {})
       @display = display
       @dimensions = dimensions[/.+(?=x)/]
@@ -14,6 +17,11 @@ class Headless
       @codec = options.fetch(:codec, "qtrle")
       @frame_rate = options.fetch(:frame_rate, 30)
       @provider = options.fetch(:provider, :libav)  # or :ffmpeg
+
+      # If no provider_binary was specified, then
+      # make a guess based upon the provider.
+      @provider_binary = options.fetch(:provider_binary, guess_the_provider_binary)
+
       @extra = Array(options.fetch(:extra, []))
 
       CliUtil.ensure_application_exists!(provider_binary, "#{provider_binary} not found on your system. Install it or change video recorder provider")
@@ -55,8 +63,8 @@ class Headless
 
     private
 
-    def provider_binary
-      @provider==:libav ? 'avconv' : 'ffmpeg'
+    def guess_the_provider_binary
+      @provider== :libav ? 'avconv' : 'ffmpeg'
     end
 
     def command_line_for_capture
