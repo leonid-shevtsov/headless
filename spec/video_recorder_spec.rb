@@ -9,34 +9,34 @@ describe Headless::VideoRecorder do
 
   describe "instantiation" do
 
-    it "throws an error if provider_binary is not installed" do
+    it "throws an error if provider_binary_path is not installed" do
       allow(Headless::CliUtil).to receive(:application_exists?).and_return(false)
       expect { Headless::VideoRecorder.new(99, "1024x768x32") }.to raise_error(Headless::Exception)
     end
 
-    it "allows provider_binary to be specified" do 
+    it "allows provider_binary_path to be specified" do 
       Tempfile.open('some_provider') do |f|
-        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg, provider_binary: f.path)
-        expect(v.provider_binary).to eq(f.path)
+        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg, provider_binary_path: f.path)
+        expect(v.provider_binary_path).to eq(f.path)
       end
     end
 
-    it "allows provider_binary to be specified" do 
+    it "allows provider_binary_path to be specified" do 
       Tempfile.open('some_provider') do |f|
-        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg, provider_binary: f.path)
-        expect(v.provider_binary).to eq(f.path)
+        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg, provider_binary_path: f.path)
+        expect(v.provider_binary_path).to eq(f.path)
       end
     end
 
-    context "provider_binary not specified" do 
+    context "provider_binary_path not specified" do 
       it "assumes the provider binary is 'ffmpeg' if the provider is :ffmpeg" do 
         v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg)
-        expect(v.provider_binary).to eq("ffmpeg")
+        expect(v.provider_binary_path).to eq("ffmpeg")
       end
 
       it "assumes the provider binary is 'avconv' if the provider is :libav" do 
         v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :libav)
-        expect(v.provider_binary).to eq("avconv")
+        expect(v.provider_binary_path).to eq("avconv")
       end
 
     end
