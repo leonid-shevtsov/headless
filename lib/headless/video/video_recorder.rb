@@ -4,6 +4,9 @@ class Headless
   class VideoRecorder
     attr_accessor :pid_file_path, :tmp_file_path, :log_file_path
 
+    # Allow end-users to override the path to the binary
+    attr_accessor :provider_binary_path
+
     def initialize(display, dimensions, options = {})
       @display = display
       @dimensions = dimensions[/.+(?=x)/]
@@ -14,9 +17,14 @@ class Headless
       @codec = options.fetch(:codec, "qtrle")
       @frame_rate = options.fetch(:frame_rate, 30)
       @provider = options.fetch(:provider, :libav)  # or :ffmpeg
+
+      # If no provider_binary_path was specified, then
+      # make a guess based upon the provider.
+      @provider_binary_path = options.fetch(:provider_binary_path, guess_the_provider_binary_path)
+
       @extra = Array(options.fetch(:extra, []))
 
-      CliUtil.ensure_application_exists!(provider_binary, "#{provider_binary} not found on your system. Install it or change video recorder provider")
+      CliUtil.ensure_application_exists!(provider_binary_path, "#{provider_binary_path} not found on your system. Install it or change video recorder provider")
     end
 
     def capture_running?
@@ -55,8 +63,8 @@ class Headless
 
     private
 
-    def provider_binary
-      @provider==:libav ? 'avconv' : 'ffmpeg'
+    def guess_the_provider_binary_path
+      @provider== :libav ? 'avconv' : 'ffmpeg'
     end
 
     def command_line_for_capture
@@ -69,7 +77,7 @@ class Headless
       end
 
       ([
-        CliUtil.path_to(provider_binary),
+        CliUtil.path_to(provider_binary_path),
         "-y",
         "-r #{@frame_rate}",
         "-s #{dimensions}",
