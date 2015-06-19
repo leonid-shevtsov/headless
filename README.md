@@ -84,7 +84,8 @@ Headless.new(display: 100, reuse: true, destroy_at_exit: false).start
 headless = Headless.new(display: 100, reuse: true)
 headless.destroy
 ```
- 
+
+There's also a different approach that creates a new virtual display for every parallel test process - see [this implementation](https://gist.github.com/rosskevin/5937888) by @rosskevin.
 
 ## Cucumber with wkhtmltopdf
 
