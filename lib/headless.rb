@@ -101,15 +101,24 @@ class Headless
   end
 
   # Switches back from the headless server and terminates the headless session
+  # while waiting for Xvfb process to terminate.
   def destroy
     stop
-    CliUtil.kill_process(pid_filename, preserve_pid_file: true)
+    CliUtil.kill_process(pid_filename, preserve_pid_file: true, wait: true)
   end
 
-  # Same as destroy, but waits for Xvfb process to terminate
+  # Deprecated.
+  # Same as destroy.
+  # Kept for backward compatibility in June 2015. 
   def destroy_sync
+    destroy
+  end
+
+  # Same as the old destroy function -- doesn't wait for Xvfb to die. 
+  # Can cause zombies: http://stackoverflow.com/a/31003621/1651458
+  def destroy_without_sync
     stop
-    CliUtil.kill_process(pid_filename, preserve_pid_file: true, wait: true)
+    CliUtil.kill_process(pid_filename, preserve_pid_file: true)
   end
 
   # Block syntax:
