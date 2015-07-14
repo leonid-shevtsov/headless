@@ -83,6 +83,10 @@ Headless.new(display: 100, reuse: true, destroy_at_exit: false).start
 # reap_headless.rb 
 headless = Headless.new(display: 100, reuse: true)
 headless.destroy
+
+# kill_headless_without_waiting.rb 
+headless = Headless.new
+headless.destroy_without_sync
 ```
 
 There's also a different approach that creates a new virtual display for every parallel test process - see [this implementation](https://gist.github.com/rosskevin/5937888) by @rosskevin.
