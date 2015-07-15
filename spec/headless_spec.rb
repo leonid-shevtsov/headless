@@ -176,6 +176,18 @@ describe Headless do
         expect { headless.take_screenshot('a.png', :using => :xwd) }.to raise_error(Headless::Exception)
       end
 
+      it "raises an error if gm is not installed with using: :graphicsmagick" do
+        allow(Headless::CliUtil).to receive(:application_exists?).with('gm').and_return(false)
+
+        expect { headless.take_screenshot('a.png', :using => :graphicsmagick) }.to raise_error(Headless::Exception)
+      end
+
+      it "raises an error if gm is not installed with using: :gm" do
+        allow(Headless::CliUtil).to receive(:application_exists?).with('gm').and_return(false)
+
+        expect { headless.take_screenshot('a.png', :using => :gm) }.to raise_error(Headless::Exception)
+      end
+
       it "issues command to take screenshot, with default options" do
         allow(Headless::CliUtil).to receive(:path_to).with('import').and_return('path/import')
         expect(headless).to receive(:system).with("path/import -display localhost:99 -window root /tmp/image.png")
@@ -192,6 +204,18 @@ describe Headless do
         allow(Headless::CliUtil).to receive(:path_to).with('xwd').and_return('path/xwd')
         expect(headless).to receive(:system).with("path/xwd -display localhost:99 -silent -root -out /tmp/image.png")
         headless.take_screenshot("/tmp/image.png", :using => :xwd)
+      end
+
+      it "issues command to take screenshot, with using: :graphicsmagick" do
+        allow(Headless::CliUtil).to receive(:path_to).with('gm').and_return('path/gm')
+        expect(headless).to receive(:system).with("path/gm import -display localhost:99 -window root /tmp/image.png")
+        headless.take_screenshot("/tmp/image.png", :using => :graphicsmagick)
+      end
+
+      it "issues command to take screenshot, with using: :gm" do
+        allow(Headless::CliUtil).to receive(:path_to).with('gm').and_return('path/gm')
+        expect(headless).to receive(:system).with("path/gm import -display localhost:99 -window root /tmp/image.png")
+        headless.take_screenshot("/tmp/image.png", :using => :gm)
       end
     end
   end
