@@ -152,7 +152,7 @@ class Headless
     end
   end
 
-private
+  private
 
   def attach_xvfb
     possible_display_set = @autopick_display ? @display..MAX_DISPLAY_NUMBER : Array(@display)
