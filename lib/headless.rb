@@ -189,7 +189,7 @@ private
     errors = ''
     begin
       begin
-        errors += out_pipe.read_nonblock(10000)
+        errors += out_pipe.read_nonblock(10_000)
         if errors.include? 'Cannot establish any listening sockets'
           raise Headless::Exception.new('Display socket is taken but lock file is missing - check the Headless troubleshooting guide')
         end

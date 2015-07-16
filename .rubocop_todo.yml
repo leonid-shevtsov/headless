@@ -112,11 +112,6 @@ Style/HashSyntax:
 Style/NegatedIf:
   Enabled: false
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/NumericLiterals:
-  MinDigits: 6
-
 # Offense count: 6
 # Configuration parameters: SupportedStyles.
 Style/RaiseArgs:

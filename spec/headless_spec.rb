@@ -40,7 +40,7 @@ describe Headless do
 
       context 'when Xvfb is already running' do
         before do
-          allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X99-lock').and_return(31337)
+          allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X99-lock').and_return(31_337)
           allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X100-lock').and_return(nil)
         end
 
