@@ -40,7 +40,6 @@ require 'headless/video/video_recorder'
 # TODO test that reuse actually works with an existing xvfb session
 #++
 class Headless
-
   DEFAULT_DISPLAY_NUMBER = 99
   MAX_DISPLAY_NUMBER = 10_000
   DEFAULT_DISPLAY_DIMENSIONS = '1280x1024x24'
