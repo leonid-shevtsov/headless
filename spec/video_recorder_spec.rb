@@ -8,7 +8,6 @@ describe Headless::VideoRecorder do
   end
 
   describe 'instantiation' do
-
     it 'throws an error if provider_binary_path is not installed' do
       allow(Headless::CliUtil).to receive(:application_exists?).and_return(false)
       expect { Headless::VideoRecorder.new(99, '1024x768x32') }.to raise_error(Headless::Exception)
@@ -38,7 +37,6 @@ describe Headless::VideoRecorder do
         v = Headless::VideoRecorder.new(99, '1024x768x32', provider: :libav)
         expect(v.provider_binary_path).to eq('avconv')
       end
-
     end
   end
 
