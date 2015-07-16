@@ -143,10 +143,10 @@ class Headless
   def take_screenshot(file_path, options={})
     using = options.fetch(:using, :imagemagick)
     if using == :imagemagick
-      CliUtil.ensure_application_exists!('import', "imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick")
+      CliUtil.ensure_application_exists!('import', 'imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick')
       system "#{CliUtil.path_to('import')} -display localhost:#{display} -window root #{file_path}"
     elsif using == :xwd
-      CliUtil.ensure_application_exists!('xwd', "xwd is not found on your system. Please install it using sudo apt-get install X11-apps")
+      CliUtil.ensure_application_exists!('xwd', 'xwd is not found on your system. Please install it using sudo apt-get install X11-apps')
       system "#{CliUtil.path_to('xwd')} -display localhost:#{display} -silent -root -out #{file_path}"
     else
       raise Headless::Exception.new('Unknown :using option value')
@@ -170,13 +170,13 @@ private
         next
       end
     end
-    raise Headless::Exception.new("Could not find an available display")
+    raise Headless::Exception.new('Could not find an available display')
   end
 
   def launch_xvfb
     out_pipe, in_pipe = IO.pipe
     pid = Process.spawn(
-      CliUtil.path_to("Xvfb"), ":#{display}", "-screen", "0", dimensions, "-ac",
+      CliUtil.path_to('Xvfb'), ":#{display}", '-screen', '0', dimensions, '-ac',
       err: in_pipe)
     in_pipe.close
     raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless pid
@@ -186,18 +186,18 @@ private
 
   def ensure_xvfb_is_running(out_pipe)
     start_time = Time.now
-    errors = ""
+    errors = ''
     begin
       begin
         errors += out_pipe.read_nonblock(10000)
-        if errors.include? "Cannot establish any listening sockets"
-          raise Headless::Exception.new("Display socket is taken but lock file is missing - check the Headless troubleshooting guide")
+        if errors.include? 'Cannot establish any listening sockets'
+          raise Headless::Exception.new('Display socket is taken but lock file is missing - check the Headless troubleshooting guide')
         end
       rescue IO::WaitReadable
         # will retry next cycle
       end
       sleep 0.01 # to avoid cpu hogging
-      raise Headless::Exception.new("Xvfb launched but did not complete initialization") if (Time.now-start_time)>=@xvfb_launch_timeout
+      raise Headless::Exception.new('Xvfb launched but did not complete initialization') if (Time.now-start_time)>=@xvfb_launch_timeout
     end while !xvfb_running?
   end
 

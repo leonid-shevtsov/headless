@@ -13,8 +13,8 @@ class Headless
 
       @pid_file_path = options.fetch(:pid_file_path, "/tmp/.headless_ffmpeg_#{@display}.pid")
       @tmp_file_path = options.fetch(:tmp_file_path, "/tmp/.headless_ffmpeg_#{@display}.mov")
-      @log_file_path = options.fetch(:log_file_path, "/dev/null")
-      @codec = options.fetch(:codec, "qtrle")
+      @log_file_path = options.fetch(:log_file_path, '/dev/null')
+      @codec = options.fetch(:codec, 'qtrle')
       @frame_rate = options.fetch(:frame_rate, 30)
       @provider = options.fetch(:provider, :libav)  # or :ffmpeg
 
@@ -78,10 +78,10 @@ class Headless
 
       ([
         CliUtil.path_to(provider_binary_path),
-        "-y",
+        '-y',
         "-r #{@frame_rate}",
         "-s #{dimensions}",
-        "-f x11grab",
+        '-f x11grab',
         "-i :#{@display}",
         group_of_pic_size_option,
         "-vcodec #{@codec}"

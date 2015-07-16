@@ -1,7 +1,7 @@
 class Headless
   class CliUtil
     def self.application_exists?(app)
-      `which #{app}`.strip != ""
+      `which #{app}`.strip != ''
     end
 
     def self.ensure_application_exists!(app, error_message)
@@ -15,7 +15,7 @@ class Headless
     end
 
     def self.read_pid(pid_filename)
-      pid = (File.read(pid_filename) rescue "").strip.to_i
+      pid = (File.read(pid_filename) rescue '').strip.to_i
       pid = nil if pid.zero?
 
       if pid
