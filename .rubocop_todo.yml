@@ -62,9 +62,3 @@ Style/RaiseArgs:
 # Offense count: 1
 Style/RescueModifier:
   Enabled: false
-
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/SignalException:
-  Enabled: false

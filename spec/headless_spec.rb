@@ -79,7 +79,7 @@ describe Headless do
 
       context 'when Xvfb is started, but by another user' do
         before do
-          allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X99-lock') { raise Errno::EPERM }
+          allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X99-lock') { fail Errno::EPERM }
           allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X100-lock').and_return(nil)
         end
 
