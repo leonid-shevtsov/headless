@@ -127,7 +127,7 @@ class Headless
   #     # perform operations in headless mode
   #   end
   # See #new for options
-  def self.run(options={}, &block)
+  def self.run(options = {}, &block)
     headless = Headless.new(options)
     headless.start
     yield headless
@@ -140,7 +140,7 @@ class Headless
     @video_recorder ||= VideoRecorder.new(display, dimensions, @video_capture_options)
   end
 
-  def take_screenshot(file_path, options={})
+  def take_screenshot(file_path, options = {})
     using = options.fetch(:using, :imagemagick)
     if using == :imagemagick
       CliUtil.ensure_application_exists!('import', 'imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick')

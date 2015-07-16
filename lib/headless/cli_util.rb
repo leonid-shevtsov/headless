@@ -30,7 +30,7 @@ class Headless
       end
     end
 
-    def self.fork_process(command, pid_filename, log_filename='/dev/null')
+    def self.fork_process(command, pid_filename, log_filename = '/dev/null')
       pid = fork do
         STDERR.reopen(log_filename)
         exec command
@@ -42,7 +42,7 @@ class Headless
       end
     end
 
-    def self.kill_process(pid_filename, options={})
+    def self.kill_process(pid_filename, options = {})
       if pid = self.read_pid(pid_filename)
         begin
           Process.kill 'TERM', pid
