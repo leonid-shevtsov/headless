@@ -14,27 +14,27 @@ describe Headless::VideoRecorder do
       expect { Headless::VideoRecorder.new(99, "1024x768x32") }.to raise_error(Headless::Exception)
     end
 
-    it "allows provider_binary_path to be specified" do 
+    it "allows provider_binary_path to be specified" do
       Tempfile.open('some_provider') do |f|
         v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg, provider_binary_path: f.path)
         expect(v.provider_binary_path).to eq(f.path)
       end
     end
 
-    it "allows provider_binary_path to be specified" do 
+    it "allows provider_binary_path to be specified" do
       Tempfile.open('some_provider') do |f|
         v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg, provider_binary_path: f.path)
         expect(v.provider_binary_path).to eq(f.path)
       end
     end
 
-    context "provider_binary_path not specified" do 
-      it "assumes the provider binary is 'ffmpeg' if the provider is :ffmpeg" do 
+    context "provider_binary_path not specified" do
+      it "assumes the provider binary is 'ffmpeg' if the provider is :ffmpeg" do
         v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg)
         expect(v.provider_binary_path).to eq("ffmpeg")
       end
 
-      it "assumes the provider binary is 'avconv' if the provider is :libav" do 
+      it "assumes the provider binary is 'avconv' if the provider is :libav" do
         v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :libav)
         expect(v.provider_binary_path).to eq("avconv")
       end

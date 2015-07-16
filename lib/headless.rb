@@ -109,12 +109,12 @@ class Headless
 
   # Deprecated.
   # Same as destroy.
-  # Kept for backward compatibility in June 2015. 
+  # Kept for backward compatibility in June 2015.
   def destroy_sync
     destroy
   end
 
-  # Same as the old destroy function -- doesn't wait for Xvfb to die. 
+  # Same as the old destroy function -- doesn't wait for Xvfb to die.
   # Can cause zombies: http://stackoverflow.com/a/31003621/1651458
   def destroy_without_sync
     stop
