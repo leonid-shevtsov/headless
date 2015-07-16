@@ -126,7 +126,7 @@ class Headless
   #     # perform operations in headless mode
   #   end
   # See #new for options
-  def self.run(options = {}, &block)
+  def self.run(options = {}, &_block)
     headless = Headless.new(options)
     headless.start
     yield headless

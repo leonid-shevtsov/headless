@@ -18,11 +18,6 @@ Lint/HandleExceptions:
 Lint/Loop:
   Enabled: false
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Lint/UnusedMethodArgument:
-  Enabled: false
-
 # Offense count: 3
 Lint/UselessAssignment:
   Enabled: false
