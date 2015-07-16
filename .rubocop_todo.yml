@@ -129,11 +129,6 @@ Style/RedundantReturn:
   Enabled: false
 
 # Offense count: 1
-# Cop supports --auto-correct.
-Style/RedundantSelf:
-  Enabled: false
-
-# Offense count: 1
 Style/RescueModifier:
   Enabled: false
 

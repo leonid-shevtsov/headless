@@ -43,7 +43,7 @@ class Headless
     end
 
     def self.kill_process(pid_filename, options = {})
-      if pid = self.read_pid(pid_filename)
+      if pid = read_pid(pid_filename)
         begin
           Process.kill 'TERM', pid
           Process.wait pid if options[:wait]
