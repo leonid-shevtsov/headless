@@ -55,14 +55,14 @@ describe Headless::VideoRecorder do
     it 'starts ffmpeg with specified codec' do
       expect(Headless::CliUtil).to receive(:fork_process).with(/^ffmpeg -y -r 30 -s 1024x768 -f x11grab -i :99 -g 600 -vcodec libvpx [^ ]+$/, '/tmp/.headless_ffmpeg_99.pid', '/dev/null')
 
-      recorder = Headless::VideoRecorder.new(99, '1024x768x32', { codec: 'libvpx' })
+      recorder = Headless::VideoRecorder.new(99, '1024x768x32', codec: 'libvpx')
       recorder.start_capture
     end
 
     it 'starts ffmpeg from ffmpeg provider with correct parameters' do
       expect(Headless::CliUtil).to receive(:fork_process).with(/^ffmpeg -y -r 30 -s 1024x768 -f x11grab -i :99 -vcodec qtrle [^ ]+$/, '/tmp/.headless_ffmpeg_99.pid', '/dev/null')
 
-      recorder = Headless::VideoRecorder.new(99, '1024x768x32', { provider: :ffmpeg })
+      recorder = Headless::VideoRecorder.new(99, '1024x768x32', provider: :ffmpeg)
       recorder.start_capture
     end
   end
