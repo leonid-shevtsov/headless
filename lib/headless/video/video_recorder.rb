@@ -35,7 +35,7 @@ class Headless
       CliUtil.fork_process(command_line_for_capture,
                            @pid_file_path, @log_file_path)
       at_exit do
-        exit_status = $!.status if $!.is_a?(SystemExit)
+        exit_status = $ERROR_INFO.status if $ERROR_INFO.is_a?(SystemExit)
         stop_and_discard
         exit exit_status if exit_status
       end

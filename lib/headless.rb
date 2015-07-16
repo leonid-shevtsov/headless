@@ -217,7 +217,7 @@ private
     unless @at_exit_hook_installed
       @at_exit_hook_installed = true
       at_exit do
-        exit_status = $!.status if $!.is_a?(SystemExit)
+        exit_status = $ERROR_INFO.status if $ERROR_INFO.is_a?(SystemExit)
         destroy if @destroy_at_exit
         exit exit_status if exit_status
       end

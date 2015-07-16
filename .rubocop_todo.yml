@@ -160,8 +160,3 @@ Style/SpaceAroundOperators:
 # Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SupportedStyles.
 Style/SpaceInsideHashLiteralBraces:
   Enabled: false
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/SpecialGlobalVars:
-  Enabled: false
