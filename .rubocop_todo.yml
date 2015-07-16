@@ -52,12 +52,6 @@ Metrics/MethodLength:
 Style/AccessModifierIndentation:
   Enabled: false
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles, ProceduralMethods, FunctionalMethods, IgnoredMethods.
-Style/BlockDelimiters:
-  Enabled: false
-
 # Offense count: 2
 Style/Documentation:
   Enabled: false

@@ -26,10 +26,10 @@ describe 'Integration test' do
   end
 
   it 'should raise an error when trying to create the same display' do
-    expect {
+    expect do
       FileUtils.mv("/tmp/.X#{headless.display}-lock", '/tmp/headless-test-tmp')
       Headless.new(display: headless.display, reuse: false)
-    }.to raise_error(Headless::Exception, /troubleshooting guide/)
+    end.to raise_error(Headless::Exception, /troubleshooting guide/)
     FileUtils.mv('/tmp/headless-test-tmp', "/tmp/.X#{headless.display}-lock")
   end
 
