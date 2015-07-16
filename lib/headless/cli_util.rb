@@ -1,12 +1,12 @@
 class Headless
   class CliUtil
     def self.application_exists?(app)
-      `which #{app}`.strip != ""
+      `which #{app}`.strip != ''
     end
 
     def self.ensure_application_exists!(app, error_message)
-      if !self.application_exists?(app)
-        raise Headless::Exception.new(error_message)
+      unless self.application_exists?(app)
+        fail Headless::Exception.new(error_message)
       end
     end
 
@@ -15,7 +15,7 @@ class Headless
     end
 
     def self.read_pid(pid_filename)
-      pid = (File.read(pid_filename) rescue "").strip.to_i
+      pid = (File.read(pid_filename) rescue '').strip.to_i
       pid = nil if pid.zero?
 
       if pid
@@ -25,12 +25,10 @@ class Headless
         rescue Errno::ESRCH
           nil
         end
-      else
-        nil
       end
     end
 
-    def self.fork_process(command, pid_filename, log_filename='/dev/null')
+    def self.fork_process(command, pid_filename, log_filename = '/dev/null')
       pid = fork do
         STDERR.reopen(log_filename)
         exec command
@@ -42,8 +40,8 @@ class Headless
       end
     end
 
-    def self.kill_process(pid_filename, options={})
-      if pid = self.read_pid(pid_filename)
+    def self.kill_process(pid_filename, options = {})
+      if pid = read_pid(pid_filename)
         begin
           Process.kill 'TERM', pid
           Process.wait pid if options[:wait]

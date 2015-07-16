@@ -37,10 +37,9 @@ require 'headless/video/video_recorder'
 #
 #   headless.destroy
 #--
-# TODO test that reuse actually works with an existing xvfb session
+# TODO: test that reuse actually works with an existing xvfb session
 #++
 class Headless
-
   DEFAULT_DISPLAY_NUMBER = 99
   MAX_DISPLAY_NUMBER = 10_000
   DEFAULT_DISPLAY_DIMENSIONS = '1280x1024x24'
@@ -84,7 +83,7 @@ class Headless
     @video_capture_options = options.fetch(:video, {})
     @destroy_at_exit = options.fetch(:destroy_at_exit, true)
 
-    # FIXME Xvfb launch should not happen inside the constructor
+    # FIXME: Xvfb launch should not happen inside the constructor
     attach_xvfb
   end
 
@@ -109,12 +108,12 @@ class Headless
 
   # Deprecated.
   # Same as destroy.
-  # Kept for backward compatibility in June 2015. 
+  # Kept for backward compatibility in June 2015.
   def destroy_sync
     destroy
   end
 
-  # Same as the old destroy function -- doesn't wait for Xvfb to die. 
+  # Same as the old destroy function -- doesn't wait for Xvfb to die.
   # Can cause zombies: http://stackoverflow.com/a/31003621/1651458
   def destroy_without_sync
     stop
@@ -127,7 +126,7 @@ class Headless
   #     # perform operations in headless mode
   #   end
   # See #new for options
-  def self.run(options={}, &block)
+  def self.run(options = {}, &_block)
     headless = Headless.new(options)
     headless.start
     yield headless
@@ -140,20 +139,20 @@ class Headless
     @video_recorder ||= VideoRecorder.new(display, dimensions, @video_capture_options)
   end
 
-  def take_screenshot(file_path, options={})
+  def take_screenshot(file_path, options = {})
     using = options.fetch(:using, :imagemagick)
     if using == :imagemagick
-      CliUtil.ensure_application_exists!('import', "imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick")
+      CliUtil.ensure_application_exists!('import', 'imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick')
       system "#{CliUtil.path_to('import')} -display localhost:#{display} -window root #{file_path}"
     elsif using == :xwd
-      CliUtil.ensure_application_exists!('xwd', "xwd is not found on your system. Please install it using sudo apt-get install X11-apps")
+      CliUtil.ensure_application_exists!('xwd', 'xwd is not found on your system. Please install it using sudo apt-get install X11-apps')
       system "#{CliUtil.path_to('xwd')} -display localhost:#{display} -silent -root -out #{file_path}"
     else
-      raise Headless::Exception.new('Unknown :using option value')
+      fail Headless::Exception.new('Unknown :using option value')
     end
   end
 
-private
+  private
 
   def attach_xvfb
     possible_display_set = @autopick_display ? @display..MAX_DISPLAY_NUMBER : Array(@display)
@@ -170,34 +169,34 @@ private
         next
       end
     end
-    raise Headless::Exception.new("Could not find an available display")
+    fail Headless::Exception.new('Could not find an available display')
   end
 
   def launch_xvfb
     out_pipe, in_pipe = IO.pipe
     pid = Process.spawn(
-      CliUtil.path_to("Xvfb"), ":#{display}", "-screen", "0", dimensions, "-ac",
+      CliUtil.path_to('Xvfb'), ":#{display}", '-screen', '0', dimensions, '-ac',
       err: in_pipe)
     in_pipe.close
-    raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless pid
+    fail Headless::Exception.new("Xvfb did not launch - something's wrong") unless pid
     ensure_xvfb_is_running(out_pipe)
-    return true
+    true
   end
 
   def ensure_xvfb_is_running(out_pipe)
     start_time = Time.now
-    errors = ""
+    errors = ''
     begin
       begin
-        errors += out_pipe.read_nonblock(10000)
-        if errors.include? "Cannot establish any listening sockets"
-          raise Headless::Exception.new("Display socket is taken but lock file is missing - check the Headless troubleshooting guide")
+        errors += out_pipe.read_nonblock(10_000)
+        if errors.include? 'Cannot establish any listening sockets'
+          fail Headless::Exception.new('Display socket is taken but lock file is missing - check the Headless troubleshooting guide')
         end
       rescue IO::WaitReadable
         # will retry next cycle
       end
       sleep 0.01 # to avoid cpu hogging
-      raise Headless::Exception.new("Xvfb launched but did not complete initialization") if (Time.now-start_time)>=@xvfb_launch_timeout
+      fail Headless::Exception.new('Xvfb launched but did not complete initialization') if (Time.now - start_time) >= @xvfb_launch_timeout
     end while !xvfb_running?
   end
 
@@ -217,7 +216,7 @@ private
     unless @at_exit_hook_installed
       @at_exit_hook_installed = true
       at_exit do
-        exit_status = $!.status if $!.is_a?(SystemExit)
+        exit_status = $ERROR_INFO.status if $ERROR_INFO.is_a?(SystemExit)
         destroy if @destroy_at_exit
         exit exit_status if exit_status
       end

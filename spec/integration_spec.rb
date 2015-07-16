@@ -12,8 +12,8 @@ describe 'Integration test' do
   end
 
   it 'should record screenshots' do
-    headless.take_screenshot("test.jpg")
-    expect(File.exist?("test.jpg")).to eq true
+    headless.take_screenshot('test.jpg')
+    expect(File.exist?('test.jpg')).to eq true
   end
 
   # Unfortunately the libav version that ships with Ubuntu 12.04 has
@@ -21,16 +21,16 @@ describe 'Integration test' do
   it 'should record video with ffmpeg', pending: ENV['TRAVIS'] do
     headless.video.start_capture
     work_with_browser
-    headless.video.stop_and_save("test.mov")
-    expect(File.exist?("test.mov")).to eq true
+    headless.video.stop_and_save('test.mov')
+    expect(File.exist?('test.mov')).to eq true
   end
 
   it 'should raise an error when trying to create the same display' do
-    expect {
-      FileUtils.mv("/tmp/.X#{headless.display}-lock", "/tmp/headless-test-tmp")
+    expect do
+      FileUtils.mv("/tmp/.X#{headless.display}-lock", '/tmp/headless-test-tmp')
       Headless.new(display: headless.display, reuse: false)
-    }.to raise_error(Headless::Exception, /troubleshooting guide/)
-    FileUtils.mv("/tmp/headless-test-tmp", "/tmp/.X#{headless.display}-lock")
+    end.to raise_error(Headless::Exception, /troubleshooting guide/)
+    FileUtils.mv('/tmp/headless-test-tmp', "/tmp/.X#{headless.display}-lock")
   end
 
   private
