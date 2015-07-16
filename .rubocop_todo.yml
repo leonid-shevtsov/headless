@@ -154,9 +154,3 @@ Style/SpaceAroundEqualsInParameterDefault:
 # Configuration parameters: MultiSpaceAllowedForOperators.
 Style/SpaceAroundOperators:
   Enabled: false
-
-# Offense count: 16
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SupportedStyles.
-Style/SpaceInsideHashLiteralBraces:
-  Enabled: false

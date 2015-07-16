@@ -45,7 +45,7 @@ describe Headless do
         end
 
         context 'and display reuse is allowed' do
-          let(:options) { {:reuse => true} }
+          let(:options) { { :reuse => true } }
 
           it 'should reuse the existing Xvfb' do
             expect(Headless.new(options).display).to eq 99
@@ -53,21 +53,21 @@ describe Headless do
         end
 
         context 'and display reuse is not allowed' do
-          let(:options) { {:reuse => false} }
+          let(:options) { { :reuse => false } }
 
           it 'should pick the next available display number' do
             expect(Headless.new(options).display).to eq 100
           end
 
           context 'and display number is explicitly set' do
-            let(:options) { {:reuse => false, :display => 99} }
+            let(:options) { { :reuse => false, :display => 99 } }
 
             it 'should fail with an exception' do
               expect { Headless.new(options) }.to raise_error(Headless::Exception)
             end
 
             context 'and autopicking is allowed' do
-              let(:options) { {:reuse => false, :display => 99, :autopick => true} }
+              let(:options) { { :reuse => false, :display => 99, :autopick => true } }
 
               it 'should pick the next available display number' do
                 expect(Headless.new(options).display).to eq 100
@@ -84,7 +84,7 @@ describe Headless do
         end
 
         context 'and display autopicking is not allowed' do
-          let(:options) { {:autopick => false} }
+          let(:options) { { :autopick => false } }
 
           it 'should fail with and exception' do
             expect { Headless.new(options) }.to raise_error(Headless::Exception)
@@ -92,7 +92,7 @@ describe Headless do
         end
 
         context 'and display autopicking is allowed' do
-          let(:options) { {:autopick => true} }
+          let(:options) { { :autopick => true } }
 
           it 'should pick the next display number' do
             expect(Headless.new(options).display).to eq 100
