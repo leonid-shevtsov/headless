@@ -5,7 +5,7 @@ class Headless
     end
 
     def self.ensure_application_exists!(app, error_message)
-      if !self.application_exists?(app)
+      unless self.application_exists?(app)
         raise Headless::Exception.new(error_message)
       end
     end
