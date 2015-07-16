@@ -64,7 +64,7 @@ class Headless
     private
 
     def guess_the_provider_binary_path
-      @provider== :libav ? 'avconv' : 'ffmpeg'
+      @provider == :libav ? 'avconv' : 'ffmpeg'
     end
 
     def command_line_for_capture

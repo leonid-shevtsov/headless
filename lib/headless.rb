@@ -197,7 +197,7 @@ private
         # will retry next cycle
       end
       sleep 0.01 # to avoid cpu hogging
-      raise Headless::Exception.new('Xvfb launched but did not complete initialization') if (Time.now-start_time)>=@xvfb_launch_timeout
+      raise Headless::Exception.new('Xvfb launched but did not complete initialization') if (Time.now - start_time) >= @xvfb_launch_timeout
     end while !xvfb_running?
   end
 

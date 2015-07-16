@@ -12,12 +12,12 @@ describe Headless do
     end
 
     it 'starts Xvfb' do
-      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac)+[hash_including(:err)])).and_return(123)
+      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac) + [hash_including(:err)])).and_return(123)
       headless = Headless.new
     end
 
     it 'allows setting screen dimensions' do
-      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1024x768x16 -ac)+[hash_including(:err)])).and_return(123)
+      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1024x768x16 -ac) + [hash_including(:err)])).and_return(123)
       headless = Headless.new(:dimensions => '1024x768x16')
     end
   end
