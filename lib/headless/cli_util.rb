@@ -25,8 +25,6 @@ class Headless
         rescue Errno::ESRCH
           nil
         end
-      else
-        nil
       end
     end
 
