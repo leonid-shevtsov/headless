@@ -37,7 +37,7 @@ require 'headless/video/video_recorder'
 #
 #   headless.destroy
 #--
-# TODO test that reuse actually works with an existing xvfb session
+# TODO: test that reuse actually works with an existing xvfb session
 #++
 class Headless
   DEFAULT_DISPLAY_NUMBER = 99
@@ -83,7 +83,7 @@ class Headless
     @video_capture_options = options.fetch(:video, {})
     @destroy_at_exit = options.fetch(:destroy_at_exit, true)
 
-    # FIXME Xvfb launch should not happen inside the constructor
+    # FIXME: Xvfb launch should not happen inside the constructor
     attach_xvfb
   end
 
