@@ -18,7 +18,7 @@ describe Headless do
 
     it 'allows setting screen dimensions' do
       expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1024x768x16 -ac) + [hash_including(:err)])).and_return(123)
-      headless = Headless.new(:dimensions => '1024x768x16')
+      headless = Headless.new(dimensions: '1024x768x16')
     end
   end
 
@@ -45,7 +45,7 @@ describe Headless do
         end
 
         context 'and display reuse is allowed' do
-          let(:options) { { :reuse => true } }
+          let(:options) { { reuse: true } }
 
           it 'should reuse the existing Xvfb' do
             expect(Headless.new(options).display).to eq 99
@@ -53,21 +53,21 @@ describe Headless do
         end
 
         context 'and display reuse is not allowed' do
-          let(:options) { { :reuse => false } }
+          let(:options) { { reuse: false } }
 
           it 'should pick the next available display number' do
             expect(Headless.new(options).display).to eq 100
           end
 
           context 'and display number is explicitly set' do
-            let(:options) { { :reuse => false, :display => 99 } }
+            let(:options) { { reuse: false, display: 99 } }
 
             it 'should fail with an exception' do
               expect { Headless.new(options) }.to raise_error(Headless::Exception)
             end
 
             context 'and autopicking is allowed' do
-              let(:options) { { :reuse => false, :display => 99, :autopick => true } }
+              let(:options) { { reuse: false, display: 99, autopick: true } }
 
               it 'should pick the next available display number' do
                 expect(Headless.new(options).display).to eq 100
@@ -84,7 +84,7 @@ describe Headless do
         end
 
         context 'and display autopicking is not allowed' do
-          let(:options) { { :autopick => false } }
+          let(:options) { { autopick: false } }
 
           it 'should fail with and exception' do
             expect { Headless.new(options) }.to raise_error(Headless::Exception)
@@ -92,7 +92,7 @@ describe Headless do
         end
 
         context 'and display autopicking is allowed' do
-          let(:options) { { :autopick => true } }
+          let(:options) { { autopick: true } }
 
           it 'should pick the next display number' do
             expect(Headless.new(options).display).to eq 100
@@ -155,7 +155,7 @@ describe Headless do
       let(:headless) { Headless.new }
 
       it 'raises an error if unknown value for option :using is used' do
-        expect { headless.take_screenshot('a.png', :using => :teleportation) }.to raise_error(Headless::Exception)
+        expect { headless.take_screenshot('a.png', using: :teleportation) }.to raise_error(Headless::Exception)
       end
 
       it 'raises an error if imagemagick is not installed, with default options' do
@@ -167,13 +167,13 @@ describe Headless do
       it 'raises an error if imagemagick is not installed, with using: :imagemagick' do
         allow(Headless::CliUtil).to receive(:application_exists?).with('import').and_return(false)
 
-        expect { headless.take_screenshot('a.png', :using => :imagemagick) }.to raise_error(Headless::Exception)
+        expect { headless.take_screenshot('a.png', using: :imagemagick) }.to raise_error(Headless::Exception)
       end
 
       it 'raises an error if xwd is not installed, with using: :xwd' do
         allow(Headless::CliUtil).to receive(:application_exists?).with('xwd').and_return(false)
 
-        expect { headless.take_screenshot('a.png', :using => :xwd) }.to raise_error(Headless::Exception)
+        expect { headless.take_screenshot('a.png', using: :xwd) }.to raise_error(Headless::Exception)
       end
 
       it 'issues command to take screenshot, with default options' do
@@ -185,13 +185,13 @@ describe Headless do
       it 'issues command to take screenshot, with using: :imagemagick' do
         allow(Headless::CliUtil).to receive(:path_to).with('import').and_return('path/import')
         expect(headless).to receive(:system).with('path/import -display localhost:99 -window root /tmp/image.png')
-        headless.take_screenshot('/tmp/image.png', :using => :imagemagick)
+        headless.take_screenshot('/tmp/image.png', using: :imagemagick)
       end
 
       it 'issues command to take screenshot, with using: :xwd' do
         allow(Headless::CliUtil).to receive(:path_to).with('xwd').and_return('path/xwd')
         expect(headless).to receive(:system).with('path/xwd -display localhost:99 -silent -root -out /tmp/image.png')
-        headless.take_screenshot('/tmp/image.png', :using => :xwd)
+        headless.take_screenshot('/tmp/image.png', using: :xwd)
       end
     end
   end

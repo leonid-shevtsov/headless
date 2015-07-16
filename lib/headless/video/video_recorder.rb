@@ -42,7 +42,7 @@ class Headless
     end
 
     def stop_and_save(path)
-      CliUtil.kill_process(@pid_file_path, :wait => true)
+      CliUtil.kill_process(@pid_file_path, wait: true)
       if File.exist? @tmp_file_path
         begin
           FileUtils.mv(@tmp_file_path, path)
@@ -53,7 +53,7 @@ class Headless
     end
 
     def stop_and_discard
-      CliUtil.kill_process(@pid_file_path, :wait => true)
+      CliUtil.kill_process(@pid_file_path, wait: true)
       begin
         FileUtils.rm(@tmp_file_path)
       rescue Errno::ENOENT
