@@ -14,20 +14,21 @@ class Headless
       `which #{app}`.strip
     end
 
-    def self.read_pid(pid_filename)
-      pid = (File.read(pid_filename) rescue "").strip.to_i
-      pid = nil if pid.zero?
+    def self.process_mine?(pid)
+      Process.kill(0, pid) && true
+    rescue Errno::EPERM, Errno::ESRCH
+      false
+    end
 
-      if pid
-        begin
-          Process.kill(0, pid)
-          pid
-        rescue Errno::ESRCH
-          nil
-        end
-      else
-        nil
-      end
+    def self.process_running?(pid)
+      Process.getpgid(pid) && true
+    rescue Errno::ESRCH
+      false
+    end
+
+    def self.read_pid(pid_filename)
+      pid = (File.read(pid_filename) rescue "").strip
+      pid.empty? ? nil : pid.to_i
     end
 
     def self.fork_process(command, pid_filename, log_filename='/dev/null')
@@ -43,7 +44,7 @@ class Headless
     end
 
     def self.kill_process(pid_filename, options={})
-      if pid = self.read_pid(pid_filename)
+      if pid = read_pid(pid_filename)
         begin
           Process.kill 'TERM', pid
           Process.wait pid if options[:wait]

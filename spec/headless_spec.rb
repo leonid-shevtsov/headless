@@ -38,9 +38,12 @@ describe Headless do
         end
       end
 
-      context "when Xvfb is already running" do
+      context "when Xvfb is already running and was started by this user" do
         before do
           allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X99-lock').and_return(31337)
+          allow(Headless::CliUtil).to receive(:process_running?).with(31337).and_return(true)
+          allow(Headless::CliUtil).to receive(:process_mine?).with(31337).and_return(true)
+
           allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X100-lock').and_return(nil)
         end
 
@@ -79,15 +82,18 @@ describe Headless do
 
       context 'when Xvfb is started, but by another user' do
         before do
-          allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X99-lock') { raise Errno::EPERM }
+          allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X99-lock').and_return(31337)
+          allow(Headless::CliUtil).to receive(:process_running?).with(31337).and_return(true)
+          allow(Headless::CliUtil).to receive(:process_mine?).with(31337).and_return(false)
+
           allow(Headless::CliUtil).to receive(:read_pid).with('/tmp/.X100-lock').and_return(nil)
         end
 
         context "and display autopicking is not allowed" do
           let(:options) { {:autopick => false} }
 
-          it "should fail with and exception" do
-            expect { Headless.new(options) }.to raise_error(Headless::Exception)
+          it "should reuse the display" do
+            expect(Headless.new(options).display).to eq 99
           end
         end
 
