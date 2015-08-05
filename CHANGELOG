@@ -1,3 +1,9 @@
+## 2.2.0 (2015-07-05)
+
+* Allow reuse of displays started by other user (from @marxarelli)
+* Add support for graphicsmagick instead of ImageMagick (from @BlakeMesdag)
+* Wait for Xvfb to finish when destroying it, to avoid creating zombie processes (from @samnissen)
+
 ## 2.1.0 (2015-05-10)
 
 * Allow path to video recorder binary to be customized (from @briandamaged)

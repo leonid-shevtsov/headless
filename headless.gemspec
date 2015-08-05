@@ -3,7 +3,7 @@ spec = Gem::Specification.new do |s|
   s.email = 'leonid@shevtsov.me'
 
   s.name = 'headless'
-  s.version = '2.1.0'
+  s.version = '2.2.0'
   s.summary = 'Ruby headless display interface'
 
   s.description = <<-EOF
