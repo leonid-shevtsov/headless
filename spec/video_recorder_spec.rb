@@ -71,7 +71,7 @@ describe Headless::VideoRecorder do
     it "starts ffmpeg with specified extra device options" do
       expect(Headless::CliUtil).to receive(:fork_process).with(/^ffmpeg -y -r 30 -s 1024x768 -f x11grab -draw_mouse 0 -i :99 -g 600 -vcodec qtrle [^ ]+$/, "/tmp/.headless_ffmpeg_99.pid", '/dev/null')
 
-      recorder = Headless::VideoRecorder.new(99, "1024x768x32", { :opts => {:devices => ["-draw_mouse 0"]} })
+      recorder = Headless::VideoRecorder.new(99, "1024x768x32", {:devices => ["-draw_mouse 0"]})
       recorder.start_capture
     end
   end
