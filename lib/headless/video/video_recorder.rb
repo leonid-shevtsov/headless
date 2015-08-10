@@ -23,6 +23,7 @@ class Headless
       @provider_binary_path = options.fetch(:provider_binary_path, guess_the_provider_binary_path)
 
       @extra = Array(options.fetch(:extra, []))
+      @opts = Hash(options.fetch(:opts, {}))
 
       CliUtil.ensure_application_exists!(provider_binary_path, "#{provider_binary_path} not found on your system. Install it or change video recorder provider")
     end
@@ -63,6 +64,10 @@ class Headless
 
     private
 
+    def f_options
+      @opts[:f].join(' ') if @opts[:f].is_a?(Array)
+    end
+
     def guess_the_provider_binary_path
       @provider== :libav ? 'avconv' : 'ffmpeg'
     end
@@ -77,14 +82,14 @@ class Headless
       end
 
       ([
-        CliUtil.path_to(provider_binary_path),
-        "-y",
-        "-r #{@frame_rate}",
-        "-s #{dimensions}",
-        "-f x11grab",
-        "-i :#{@display}",
-        group_of_pic_size_option,
-        "-vcodec #{@codec}"
+         CliUtil.path_to(provider_binary_path),
+         "-y",
+         "-r #{@frame_rate}",
+         "-s #{dimensions}",
+         "-f x11grab #{f_options}",
+         "-i :#{@display}",
+         group_of_pic_size_option,
+         "-vcodec #{@codec}"
       ].compact + @extra + [@tmp_file_path]).join(' ')
     end
   end
