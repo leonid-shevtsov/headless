@@ -64,8 +64,8 @@ class Headless
 
     private
 
-    def f_options
-      @opts[:f].join(' ') if @opts[:f].is_a?(Array)
+    def devices
+      @opts[:devices].join(' ') if @opts[:devices].is_a?(Array)
     end
 
     def guess_the_provider_binary_path
@@ -86,7 +86,7 @@ class Headless
          "-y",
          "-r #{@frame_rate}",
          "-s #{dimensions}",
-         "-f x11grab #{f_options}",
+         "-f x11grab #{devices}",
          "-i :#{@display}",
          group_of_pic_size_option,
          "-vcodec #{@codec}"
