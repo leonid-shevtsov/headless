@@ -1,7 +1,7 @@
 class Headless
   class CliUtil
     def self.application_exists?(app)
-      `which #{app}`.strip != ""
+      !path_to(app).nil?
     end
 
     def self.ensure_application_exists!(app, error_message)
@@ -11,7 +11,10 @@ class Headless
     end
 
     def self.path_to(app)
-      `which #{app}`.strip
+      ENV['PATH'].split(':').each do |path|
+        which = File.join(path, app)
+        return which if File.executable?(which)
+      end
     end
 
     def self.process_mine?(pid)
