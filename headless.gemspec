@@ -5,6 +5,7 @@ spec = Gem::Specification.new do |s|
   s.name = 'headless'
   s.version = '2.2.0'
   s.summary = 'Ruby headless display interface'
+  s.license = 'MIT'
 
   s.description = <<-EOF
     Headless is a Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding some low-level action.
