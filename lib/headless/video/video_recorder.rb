@@ -7,17 +7,18 @@ class Headless
     # Allow end-users to override the path to the binary
     attr_accessor :provider_binary_path
 
-    def initialize(display, dimensions, options = {})
-      @display = display
-      @dimensions = dimensions[/.+(?=x)/]
-
+    def initialize(options = {})
+      @display = options.fetch(:display, 1)
+      @dimensions = options.fetch(:dimensions, "640x480")
       @pid_file_path = options.fetch(:pid_file_path, "/tmp/.headless_ffmpeg_#{@display}.pid")
       @tmp_file_path = options.fetch(:tmp_file_path, "/tmp/.headless_ffmpeg_#{@display}.mov")
       @log_file_path = options.fetch(:log_file_path, "/dev/null")
-      @codec = options.fetch(:codec, "qtrle")
+      @codec = options.fetch(:codec, "libx264")
       @frame_rate = options.fetch(:frame_rate, 30)
       @provider = options.fetch(:provider, :libav)  # or :ffmpeg
-
+      @devices = options.fetch(:devices, "x11grab")
+      @preset = options.fetch(:preset, "ultrafast")
+      @acodec = options.fetch(:acodec, "pcm_s16le")
       # If no provider_binary_path was specified, then
       # make a guess based upon the provider.
       @provider_binary_path = options.fetch(:provider_binary_path, guess_the_provider_binary_path)
@@ -81,10 +82,13 @@ class Headless
         "-y",
         "-r #{@frame_rate}",
         "-s #{dimensions}",
-        "-f x11grab",
-        "-i :#{@display}",
+        "-f #{@devices}",
+        "-i #{@display}:#{@display}",
         group_of_pic_size_option,
-        "-vcodec #{@codec}"
+        "-vcodec #{@codec}",
+        "-crf 23",
+        "-preset #{@preset}",
+        "-acodec #{@acodec}",
       ].compact + @extra + [@tmp_file_path]).join(' ')
     end
   end

@@ -83,9 +83,9 @@ class Headless
     @dimensions = options.fetch(:dimensions, DEFAULT_DISPLAY_DIMENSIONS)
     @video_capture_options = options.fetch(:video, {})
     @destroy_at_exit = options.fetch(:destroy_at_exit, true)
-
+    @devices = options.fetch(:devices, "x11grab")
     # FIXME Xvfb launch should not happen inside the constructor
-    attach_xvfb
+    # attach_xvfb
   end
 
   # Switches to the headless server
@@ -137,7 +137,7 @@ class Headless
   class <<self; alias_method :ly, :run; end
 
   def video
-    @video_recorder ||= VideoRecorder.new(display, dimensions, @video_capture_options)
+    @video_recorder ||= VideoRecorder.new(@video_capture_options)
   end
 
   def take_screenshot(file_path, options={})
