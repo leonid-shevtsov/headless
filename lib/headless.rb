@@ -179,10 +179,11 @@ private
     pid = Process.spawn(
       CliUtil.path_to("Xvfb"), ":#{display}", "-screen", "0", dimensions, "-ac",
       err: in_pipe)
-    in_pipe.close
     raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless pid
     ensure_xvfb_is_running(out_pipe)
     return true
+    ensure
+      in_pipe.close
   end
 
   def ensure_xvfb_is_running(out_pipe)
