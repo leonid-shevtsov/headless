@@ -183,12 +183,12 @@ private
     raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless @pid
     # According to docs, you should either wait or detach on spawned procs:
     Process.detach @pid
-    return ensure_xvfb_is_running(out_pipe)
+    return ensure_xvfb_launched(out_pipe)
     ensure
       in_pipe.close
   end
 
-  def ensure_xvfb_is_running(out_pipe)
+  def ensure_xvfb_launched(out_pipe)
     start_time = Time.now
     errors = ""
     begin
@@ -207,19 +207,22 @@ private
       end
       sleep 0.01 # to avoid cpu hogging
       raise Headless::Exception.new("Xvfb launched but did not complete initialization") if (Time.now-start_time)>=@xvfb_launch_timeout
+    # Continue looping until Xvfb has written its pidfile:
     end while !xvfb_running?
-    return true
+
+    # If for any reason the pid file doesn't match ours, we lost the race to
+    # get the file lock:
+    return @pid == read_xvfb_pid
   end
 
   def xvfb_mine?
     CliUtil.process_mine?(read_xvfb_pid)
   end
 
+  # Check whether an Xvfb process is running on @display.
+  # NOTE: This might be a process started by someone else!
   def xvfb_running?
-    # Verify that our pid is the one that has the lock on our display:
-    return false if @pid.nil? || @pid != read_xvfb_pid
-
-    CliUtil.process_running?(@pid)
+    (pid = read_xvfb_pid) && CliUtil.process_running?(pid)
   end
 
   def pid_filename
