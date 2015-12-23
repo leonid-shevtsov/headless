@@ -83,6 +83,7 @@ class Headless
     @dimensions = options.fetch(:dimensions, DEFAULT_DISPLAY_DIMENSIONS)
     @video_capture_options = options.fetch(:video, {})
     @destroy_at_exit = options.fetch(:destroy_at_exit, true)
+    @pid = nil # the pid of the running Xvfb process
 
     # FIXME Xvfb launch should not happen inside the constructor
     attach_xvfb
@@ -176,14 +177,13 @@ private
 
   def launch_xvfb
     out_pipe, in_pipe = IO.pipe
-    pid = Process.spawn(
+    @pid = Process.spawn(
       CliUtil.path_to("Xvfb"), ":#{display}", "-screen", "0", dimensions, "-ac",
       err: in_pipe)
-    raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless pid
+    raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless @pid
     # According to docs, you should either wait or detach on spawned procs:
-    Process.detach pid
-    ensure_xvfb_is_running(out_pipe)
-    return true
+    Process.detach @pid
+    return ensure_xvfb_is_running(out_pipe)
     ensure
       in_pipe.close
   end
@@ -197,12 +197,18 @@ private
         if errors.include? "Cannot establish any listening sockets"
           raise Headless::Exception.new("Display socket is taken but lock file is missing - check the Headless troubleshooting guide")
         end
+        if errors.include? "Server is already active for display #{display}"
+          # This can happen if there is a race to grab the lock file.
+          # Not an exception, just return false to let pick_available_display choose another:
+          return false
+        end
       rescue IO::WaitReadable
         # will retry next cycle
       end
       sleep 0.01 # to avoid cpu hogging
       raise Headless::Exception.new("Xvfb launched but did not complete initialization") if (Time.now-start_time)>=@xvfb_launch_timeout
     end while !xvfb_running?
+    return true
   end
 
   def xvfb_mine?
@@ -210,7 +216,10 @@ private
   end
 
   def xvfb_running?
-    (pid = read_xvfb_pid) && CliUtil.process_running?(pid)
+    # Verify that our pid is the one that has the lock on our display:
+    return false if @pid.nil? || @pid != read_xvfb_pid
+
+    CliUtil.process_running?(@pid)
   end
 
   def pid_filename
