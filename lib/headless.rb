@@ -180,6 +180,8 @@ private
       CliUtil.path_to("Xvfb"), ":#{display}", "-screen", "0", dimensions, "-ac",
       err: in_pipe)
     raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless pid
+    # According to docs, you should either wait or detach on spawned procs:
+    Process.detach pid
     ensure_xvfb_is_running(out_pipe)
     return true
     ensure
