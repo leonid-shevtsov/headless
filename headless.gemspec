@@ -1,4 +1,4 @@
-spec = Gem::Specification.new do |s|
+Gem::Specification.new do |s|
   s.author = 'Leonid Shevtsov'
   s.email = 'leonid@shevtsov.me'
 
@@ -16,6 +16,6 @@ spec = Gem::Specification.new do |s|
   s.files         = `git ls-files`.split("\n")
 
   s.add_development_dependency 'rake'
-  s.add_development_dependency "rspec", "~> 3"
-  s.add_development_dependency "selenium-webdriver"
+  s.add_development_dependency 'rspec', '~> 3'
+  s.add_development_dependency 'selenium-webdriver'
 end
