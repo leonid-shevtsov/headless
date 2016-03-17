@@ -6,4 +6,5 @@ rvm:
 before_install:
   - "sudo apt-get update"
   - "sudo apt-get install -y firefox xvfb libav-tools"
+  - "gem install bundler"
 script: "rspec"
