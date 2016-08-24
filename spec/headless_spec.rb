@@ -8,7 +8,7 @@ describe Headless do
 
   describe 'launch options' do
     before do
-      allow_any_instance_of(Headless).to receive(:ensure_xvfb_is_running).and_return(true)
+      allow_any_instance_of(Headless).to receive(:ensure_xvfb_launched).and_return(true)
     end
 
     it "starts Xvfb" do
