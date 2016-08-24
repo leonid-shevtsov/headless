@@ -1,7 +1,9 @@
+require 'mkmf'
+
 class Headless
   class CliUtil
     def self.application_exists?(app)
-      `which #{app}`.strip != ""
+      !!path_to(app)
     end
 
     def self.ensure_application_exists!(app, error_message)
@@ -10,24 +12,33 @@ class Headless
       end
     end
 
+    # Credit: http://stackoverflow.com/a/5471032/6678
     def self.path_to(app)
-      `which #{app}`.strip
+      exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+      ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+        exts.each { |ext|
+          exe = File.join(path, "#{app}#{ext}")
+          return exe if File.executable?(exe) && !File.directory?(exe)
+        }
+      end
+      return nil
+    end
+
+    def self.process_mine?(pid)
+      Process.kill(0, pid) && true
+    rescue Errno::EPERM, Errno::ESRCH
+      false
+    end
+
+    def self.process_running?(pid)
+      Process.getpgid(pid) && true
+    rescue Errno::ESRCH
+      false
     end
 
     def self.read_pid(pid_filename)
-      pid = (File.read(pid_filename) rescue "").strip.to_i
-      pid = nil if pid.zero?
-
-      if pid
-        begin
-          Process.kill(0, pid)
-          pid
-        rescue Errno::ESRCH
-          nil
-        end
-      else
-        nil
-      end
+      pid = (File.read(pid_filename) rescue "").strip
+      pid.empty? ? nil : pid.to_i
     end
 
     def self.fork_process(command, pid_filename, log_filename='/dev/null')
@@ -43,7 +54,7 @@ class Headless
     end
 
     def self.kill_process(pid_filename, options={})
-      if pid = self.read_pid(pid_filename)
+      if pid = read_pid(pid_filename)
         begin
           Process.kill 'TERM', pid
           Process.wait pid if options[:wait]
@@ -53,11 +64,13 @@ class Headless
           # Process.wait tried to wait on a dead process
         end
       end
-      
-      begin
-        FileUtils.rm pid_filename
-      rescue Errno::ENOENT
-        # pid file already removed
+
+      unless options[:preserve_pid_file]
+        begin
+          FileUtils.rm pid_filename
+        rescue Errno::ENOENT
+          # pid file already removed
+        end
       end
     end
   end

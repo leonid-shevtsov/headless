@@ -44,8 +44,7 @@ class Headless
   DEFAULT_DISPLAY_NUMBER = 99
   MAX_DISPLAY_NUMBER = 10_000
   DEFAULT_DISPLAY_DIMENSIONS = '1280x1024x24'
-  # How long should we wait for Xvfb to open a display, before assuming that it is frozen (in seconds)
-  XVFB_LAUNCH_TIMEOUT = 10
+  DEFAULT_XVFB_LAUNCH_TIMEOUT = 10
 
   class Exception < RuntimeError
   end
@@ -55,19 +54,31 @@ class Headless
 
   # The display dimensions
   attr_reader :dimensions
+  attr_reader :xvfb_launch_timeout
 
-  # Creates a new headless server, but does NOT switch to it immediately. Call #start for that
+  # Creates a new headless server, but does NOT switch to it immediately.
+  # Call #start for that
   #
   # List of available options:
   # * +display+ (default 99) - what display number to listen to;
-  # * +reuse+ (default true) - if given display server already exists, should we use it or try another?
-  # * +autopick+ (default true if display number isn't explicitly set) - if Headless should automatically pick a display, or fail if the given one is not available.
-  # * +dimensions+ (default 1280x1024x24) - display dimensions and depth. Not all combinations are possible, refer to +man Xvfb+.
-  # * +destroy_at_exit+ (default true unless reuse is true and a server is already running) - if a display is started but not stopped, should it be destroyed when the script finishes?
+  # * +reuse+ (default true) - if given display server already exists,
+  #   should we use it or try another?
+  # * +autopick+ (default true if display number isn't explicitly set) - if
+  #   Headless should automatically pick a display, or fail if the given one is
+  #   not available.
+  # * +dimensions+ (default 1280x1024x24) - display dimensions and depth. Not
+  #   all combinations are possible, refer to +man Xvfb+.
+  # * +destroy_at_exit+  - if a display is started but not stopped, should it
+  #   be destroyed when the script finishes?
+  #   (default true unless reuse is true and a server is already running)
+  # * +xvfb_launch_timeout+ - how long should we wait for Xvfb to open a
+  #   display, before assuming that it is frozen (in seconds, default is 10)
+  # * +video+ - options to be passed to the ffmpeg video recorder. See Headless::VideoRecorder#initialize for documentation
   def initialize(options = {})
     CliUtil.ensure_application_exists!('Xvfb', 'Xvfb not found on your system')
 
     @display = options.fetch(:display, DEFAULT_DISPLAY_NUMBER).to_i
+    @xvfb_launch_timeout = options.fetch(:xvfb_launch_timeout, DEFAULT_XVFB_LAUNCH_TIMEOUT).to_i
     @autopick_display = options.fetch(:autopick, !options.key?(:display))
     @reuse_display = options.fetch(:reuse, true)
     @dimensions = options.fetch(:dimensions, DEFAULT_DISPLAY_DIMENSIONS)
@@ -75,6 +86,8 @@ class Headless
 
     already_running = xvfb_running? rescue false
     @destroy_at_exit = options.fetch(:destroy_at_exit, !(@reuse_display && already_running))
+
+    @pid = nil # the pid of the running Xvfb process
 
     # FIXME Xvfb launch should not happen inside the constructor
     attach_xvfb
@@ -93,9 +106,24 @@ class Headless
   end
 
   # Switches back from the headless server and terminates the headless session
+  # while waiting for Xvfb process to terminate.
   def destroy
     stop
-    CliUtil.kill_process(pid_filename)
+    CliUtil.kill_process(pid_filename, preserve_pid_file: true, wait: true)
+  end
+
+  # Deprecated.
+  # Same as destroy.
+  # Kept for backward compatibility in June 2015.
+  def destroy_sync
+    destroy
+  end
+
+  # Same as the old destroy function -- doesn't wait for Xvfb to die.
+  # Can cause zombies: http://stackoverflow.com/a/31003621/1651458
+  def destroy_without_sync
+    stop
+    CliUtil.kill_process(pid_filename, preserve_pid_file: true)
   end
 
   # Whether the headless display will be destroyed when the script finishes.
@@ -122,10 +150,21 @@ class Headless
     @video_recorder ||= VideoRecorder.new(display, dimensions, @video_capture_options)
   end
 
-  def take_screenshot(file_path)
-    CliUtil.ensure_application_exists!('import', "imagemagick not found on your system. Please install it using sudo apt-get install imagemagick")
-
-    system "#{CliUtil.path_to('import')} -display localhost:#{display} -window root #{file_path}"
+  def take_screenshot(file_path, options={})
+    using = options.fetch(:using, :imagemagick)
+    case using
+    when :imagemagick
+      CliUtil.ensure_application_exists!('import', "imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick")
+      system "#{CliUtil.path_to('import')} -display localhost:#{display} -window root #{file_path}"
+    when :xwd
+      CliUtil.ensure_application_exists!('xwd', "xwd is not found on your system. Please install it using sudo apt-get install X11-apps")
+      system "#{CliUtil.path_to('xwd')} -display localhost:#{display} -silent -root -out #{file_path}"
+    when :graphicsmagick, :gm
+      CliUtil.ensure_application_exists!('gm', "graphicsmagick is not found on your system. Please install it.")
+      system "#{CliUtil.path_to('gm')} import -display localhost:#{display} -window root #{file_path}"
+    else
+      raise Headless::Exception.new('Unknown :using option value')
+    end
   end
 
 private
@@ -138,34 +177,61 @@ private
   def pick_available_display(display_set, can_reuse)
     display_set.each do |display_number|
       @display = display_number
-      begin
-        return true if xvfb_running? && can_reuse
-        return true if !xvfb_running? && launch_xvfb
-      rescue Errno::EPERM # display not accessible
-        next
-      end
+
+      return true if xvfb_running? && can_reuse && (xvfb_mine? || !@autopick_display)
+      return true if !xvfb_running? && launch_xvfb
     end
     raise Headless::Exception.new("Could not find an available display")
   end
 
   def launch_xvfb
-    #TODO error reporting
-    result = system "#{CliUtil.path_to("Xvfb")} :#{display} -screen 0 #{dimensions} -ac >/dev/null 2>&1 &"
-    raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless result
-    ensure_xvfb_is_running
-    return true
+    out_pipe, in_pipe = IO.pipe
+    @pid = Process.spawn(
+      CliUtil.path_to("Xvfb"), ":#{display}", "-screen", "0", dimensions, "-ac",
+      err: in_pipe)
+    raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless @pid
+    # According to docs, you should either wait or detach on spawned procs:
+    Process.detach @pid
+    return ensure_xvfb_launched(out_pipe)
+    ensure
+      in_pipe.close
   end
 
-  def ensure_xvfb_is_running
+  def ensure_xvfb_launched(out_pipe)
     start_time = Time.now
+    errors = ""
     begin
+      begin
+        errors += out_pipe.read_nonblock(10000)
+        if errors.include? "Cannot establish any listening sockets"
+          raise Headless::Exception.new("Display socket is taken but lock file is missing - check the Headless troubleshooting guide")
+        end
+        if errors.include? "Server is already active for display #{display}"
+          # This can happen if there is a race to grab the lock file.
+          # Not an exception, just return false to let pick_available_display choose another:
+          return false
+        end
+      rescue IO::WaitReadable
+        # will retry next cycle
+      end
       sleep 0.01 # to avoid cpu hogging
-      raise Headless::Exception.new("Xvfb is frozen") if (Time.now-start_time)>=XVFB_LAUNCH_TIMEOUT
+      raise Headless::Exception.new("Xvfb launched but did not complete initialization") if (Time.now-start_time)>=@xvfb_launch_timeout
+    # Continue looping until Xvfb has written its pidfile:
     end while !xvfb_running?
+
+    # If for any reason the pid file doesn't match ours, we lost the race to
+    # get the file lock:
+    return @pid == read_xvfb_pid
   end
 
+  def xvfb_mine?
+    CliUtil.process_mine?(read_xvfb_pid)
+  end
+
+  # Check whether an Xvfb process is running on @display.
+  # NOTE: This might be a process started by someone else!
   def xvfb_running?
-    !!read_xvfb_pid
+    (pid = read_xvfb_pid) && CliUtil.process_running?(pid)
   end
 
   def pid_filename
@@ -187,4 +253,3 @@ private
     end
   end
 end
-

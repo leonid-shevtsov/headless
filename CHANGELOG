@@ -1,3 +1,32 @@
+## 2.2.3 (2016-03-17)
+
+* Fix race condition when starting Xvfb [#75] (from @NfNitLoop)
+
+## 2.2.2 (2016-02-08)
+
+* Fix file permissions issue with gem. No actual changes
+
+## 2.2.0 (2015-07-05)
+
+* Allow reuse of displays started by other user (from @marxarelli)
+* Add support for graphicsmagick instead of ImageMagick (from @BlakeMesdag)
+* Wait for Xvfb to finish when destroying it, to avoid creating zombie processes (from @samnissen)
+
+## 2.1.0 (2015-05-10)
+
+* Allow path to video recorder binary to be customized (from @briandamaged)
+
+## 2.0.0 (2015-04-23)
+
+* Rewritten Xvfb launch using Process.spawn and avoiding a shell
+* Do not manually remove X11 lock file when stopping Xvfb; this isn’t conventional. Should eliminate some errors with not being able to find Xvfb
+* More informative error messages
+* Detect situation when Xvfb can’t listen to any sockets and raise corresponding error.
+* If video recorder provider is libav, use avconv binary instead of ffmpeg
+* Fixes to video recorder launch options (from @gpavlidi, @abotalov, @ynagorny, @WeAreFarmGeek)
+* Customize launch timeout (from @ShockwaveNN)
+* Properly working integration tests
+
 ## 1.0.2 (2014-06-03)
 
 * pass options correctly to ffmpeg (from @abotalov)
