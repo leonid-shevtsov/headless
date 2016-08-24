@@ -1,7 +1,9 @@
+require 'mkmf'
+
 class Headless
   class CliUtil
     def self.application_exists?(app)
-      `which #{app}`.strip != ""
+      !!path_to(app)
     end
 
     def self.ensure_application_exists!(app, error_message)
@@ -10,8 +12,16 @@ class Headless
       end
     end
 
+    # Credit: http://stackoverflow.com/a/5471032/6678
     def self.path_to(app)
-      `which #{app}`.strip
+      exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+      ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+        exts.each { |ext|
+          exe = File.join(path, "#{cmd}#{ext}")
+          return exe if File.executable?(exe) && !File.directory?(exe)
+        }
+      end
+      return nil
     end
 
     def self.process_mine?(pid)
