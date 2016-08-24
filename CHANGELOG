@@ -1,3 +1,9 @@
+## 2.3.0 (2016-08-24)
+
+* Remove dependency on the `which` command (from @skateman)
+* Add `devices` options to video recorder (from @atzorvas)
+* By default, do not destroy Headless started by a different process (from @marxarelli)
+
 ## 2.2.3 (2016-03-17)
 
 * Fix race condition when starting Xvfb [#75] (from @NfNitLoop)
