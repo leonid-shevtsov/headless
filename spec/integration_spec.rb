@@ -16,9 +16,7 @@ describe 'Integration test' do
     expect(File.exist?("test.jpg")).to eq true
   end
 
-  # Unfortunately the libav version that ships with Ubuntu 12.04 has
-  # buggy X11 capture.
-  it 'should record video with ffmpeg', pending: ENV['TRAVIS'] do
+  it 'should record video with ffmpeg' do
     headless.video.start_capture
     work_with_browser
     headless.video.stop_and_save("test.mov")
