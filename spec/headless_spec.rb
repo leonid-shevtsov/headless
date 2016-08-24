@@ -53,6 +53,10 @@ describe Headless do
           it "should reuse the existing Xvfb" do
             expect(Headless.new(options).display).to eq 99
           end
+
+          it "should not be destroyed at exit by default" do
+            expect(Headless.new(options).destroy_at_exit?).to eq false
+          end
         end
 
         context "and display reuse is not allowed" do
