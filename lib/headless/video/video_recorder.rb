@@ -88,16 +88,19 @@ class Headless
         dimensions = @dimensions.match(/^(\d+x\d+)/)[0]
       end
 
-      ([
+      [
          CliUtil.path_to(provider_binary_path),
          "-y",
          "-r #{@frame_rate}",
          "-s #{dimensions}",
-         "-f x11grab #{@devices.join(' ')}",
+         "-f x11grab",
+         @devices,
          "-i :#{@display}",
          group_of_pic_size_option,
-         "-vcodec #{@codec}"
-      ].compact + @extra + [@tmp_file_path]).join(' ')
+         "-vcodec #{@codec}",
+         @extra,
+         @tmp_file_path
+      ].flatten.compact.join(' ')
     end
   end
 end
