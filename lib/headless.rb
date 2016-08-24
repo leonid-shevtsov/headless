@@ -72,7 +72,7 @@ class Headless
   #   stopped, should it be destroyed when the script finishes?
   # * +xvfb_launch_timeout+ - how long should we wait for Xvfb to open a
   #   display, before assuming that it is frozen (in seconds, default is 10)
-  # * +video+ - options to be passed to the ffmpeg video recorder
+  # * +video+ - options to be passed to the ffmpeg video recorder. See Headless::VideoRecorder#initialize for documentation
   def initialize(options = {})
     CliUtil.ensure_application_exists!('Xvfb', 'Xvfb not found on your system')
 
@@ -110,12 +110,12 @@ class Headless
 
   # Deprecated.
   # Same as destroy.
-  # Kept for backward compatibility in June 2015. 
+  # Kept for backward compatibility in June 2015.
   def destroy_sync
     destroy
   end
 
-  # Same as the old destroy function -- doesn't wait for Xvfb to die. 
+  # Same as the old destroy function -- doesn't wait for Xvfb to die.
   # Can cause zombies: http://stackoverflow.com/a/31003621/1651458
   def destroy_without_sync
     stop
