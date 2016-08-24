@@ -2,11 +2,22 @@ require 'tempfile'
 
 class Headless
   class VideoRecorder
-    attr_accessor :pid_file_path, :tmp_file_path, :log_file_path
+    attr_accessor :pid_file_path, :tmp_file_path, :log_file_path, :provider_binary_path
 
-    # Allow end-users to override the path to the binary
-    attr_accessor :provider_binary_path
-
+    # Construct a new Video Recorder instance. Typically done from inside Headless, but can be also created manually,
+    # and even used separately from Headless' Xvfb features.
+    # * display - display number to capture
+    # * dimensions - dimensions of the captured video
+    # * options - available options:
+    #   * provider - either :ffmpeg or :libav; default is :libav - switch if your system is provisioned with FFMpeg
+    #   * provider_binary_path - override path to ffmpeg / libav binary
+    #   * pid_file_path - override path to PID file, default is placed in /tmp
+    #   * tmp_file_path - override path to temp file, default is placed in /tmp
+    #   * log_file_path - set log file path, default is /dev/null
+    #   * codec - change ffmpeg codec, default is qtrle
+    #   * frame_rate - change frame rate, default is 30
+    #   * devices - array of device options - see https://www.ffmpeg.org/ffmpeg-devices.html
+    #   * extra - array of extra options to append to the FFMpeg command line
     def initialize(display, dimensions, options = {})
       @display = display
       @dimensions = dimensions[/.+(?=x)/]
@@ -23,8 +34,7 @@ class Headless
       @provider_binary_path = options.fetch(:provider_binary_path, guess_the_provider_binary_path)
 
       @extra = Array(options.fetch(:extra, []))
-      devices = Array(options.fetch(:devices, []))
-      @devices = devices.any? && devices.join(' ').prepend(' ') || ''
+      @devices = Array(options.fetch(:devices, []))
 
       CliUtil.ensure_application_exists!(provider_binary_path, "#{provider_binary_path} not found on your system. Install it or change video recorder provider")
     end
@@ -83,7 +93,7 @@ class Headless
          "-y",
          "-r #{@frame_rate}",
          "-s #{dimensions}",
-         "-f x11grab#{@devices}",
+         "-f x11grab #{@devices.join(' ')}",
          "-i :#{@display}",
          group_of_pic_size_option,
          "-vcodec #{@codec}"
