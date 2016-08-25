@@ -40,12 +40,7 @@ class Headless
     end
 
     def self.fork_process(command, pid_filename, log_filename='/dev/null')
-      pid = fork do
-        STDERR.reopen(log_filename)
-        exec command
-        exit! 127 # safeguard in case exec fails
-      end
-
+      pid = Process.spawn(command, err: log_filename)
       File.open pid_filename, 'w' do |f|
         f.puts pid
       end
