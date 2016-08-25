@@ -2,15 +2,18 @@ sudo: required
 dist: trusty
 language: ruby
 cache: bundler
-rvm:
-  - 1.9.3
-  - 2.0.0-p648
-  - 2.1.10
-  - 2.2.5
-  - 2.3.1
-  - jruby
+matrix:
+  include:
+    - rvm: 1.9.3
+    - rvm: 2.0.0-p648
+    - rvm: 2.1.10
+    - rvm: 2.2.5
+    - rvm: 2.3.1
+    # see https://github.com/travis-ci/travis-ci/issues/6471
+    - rvm: jruby-9.1.2.0
+      env: JRUBY_OPTS=""
 before_install:
   - "sudo apt-get update"
   - "sudo apt-get install -y firefox xvfb libav-tools"
-  - "gem install bundler"
+
 script: "bundle exec rspec"
