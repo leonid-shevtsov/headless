@@ -1,3 +1,8 @@
+## 2.3.1 (2016-08-25)
+
+* Full JRuby support
+* HOTFIX remove `mkmf` require.
+
 ## 2.3.0 (2016-08-24)
 
 * Remove dependency on the `which` command (from @skateman)
