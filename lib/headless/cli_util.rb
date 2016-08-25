@@ -1,5 +1,3 @@
-require 'mkmf'
-
 class Headless
   class CliUtil
     def self.application_exists?(app)
