@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
     Headless is a Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding some low-level action.
   EOF
   s.requirements = 'Xvfb'
-  s.homepage = 'http://leonid.shevtsov.me/en/headless'
+  s.homepage = 'https://github.com/leonid-shevtsov/headless'
 
   s.files         = `git ls-files`.split("\n")
 
