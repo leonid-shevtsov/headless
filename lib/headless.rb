@@ -100,9 +100,9 @@ class Headless
     hook_at_exit
   end
 
-  # Switches back from the headless server
+  # Switches back from the headless server if headless server was started
   def stop
-    ENV['DISPLAY'] = @old_display
+    ENV['DISPLAY'] = @old_display if @old_display
   end
 
   # Switches back from the headless server and terminates the headless session

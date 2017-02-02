@@ -145,6 +145,12 @@ describe Headless do
           headless.destroy
           expect(ENV['DISPLAY']).to eq ":31337"
         end
+
+        it "keeps display untouched if headless was not started" do
+          expect(ENV['DISPLAY']).to eq ":31337"
+          headless.destroy
+          expect(ENV['DISPLAY']).to eq ":31337"
+        end
       end
     end
 
