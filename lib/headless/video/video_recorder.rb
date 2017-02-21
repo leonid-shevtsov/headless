@@ -57,6 +57,7 @@ class Headless
       CliUtil.kill_process(@pid_file_path, :wait => true)
       if File.exists? @tmp_file_path
         begin
+          FileUtils.mkdir_p(File.dirname(path))
           FileUtils.mv(@tmp_file_path, path)
         rescue Errno::EINVAL
           nil
@@ -94,8 +95,8 @@ class Headless
          "-r #{@frame_rate}",
          "-s #{dimensions}",
          "-f x11grab",
-         @devices,
          "-i :#{@display}",
+         @devices,
          group_of_pic_size_option,
          "-vcodec #{@codec}",
          @extra,
