@@ -57,7 +57,7 @@ class Headless
       CliUtil.kill_process(@pid_file_path, :wait => true)
       if File.exists? @tmp_file_path
         begin
-          FileUtils.mv(@tmp_file_path, path)
+          FileUtils.cp(@tmp_file_path, path)
         rescue Errno::EINVAL
           nil
         end
