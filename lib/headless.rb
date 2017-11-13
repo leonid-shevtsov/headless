@@ -205,10 +205,11 @@ private
     begin
       begin
         errors += out_pipe.read_nonblock(10000)
-        if errors.include? "Cannot establish any listening sockets"
-          raise Headless::Exception.new("Display socket is taken but lock file is missing - check the Headless troubleshooting guide")
-        end
-        if errors.include? "Server is already active for display #{display}"
+        if errors.include? "directory /tmp/.X11-unix will not be created."
+          raise Headless::Exception, "/tmp/.X11-unix is missing - check the Headless troubleshooting guide"
+        elsif errors.include? "Cannot establish any listening sockets"
+          raise Headless::Exception, "Display socket is taken but lock file is missing - check the Headless troubleshooting guide"
+        elsif errors.include? "Server is already active for display #{display}"
           # This can happen if there is a race to grab the lock file.
           # Not an exception, just return false to let pick_available_display choose another:
           return false
