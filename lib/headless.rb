@@ -83,6 +83,8 @@ class Headless
     @reuse_display = options.fetch(:reuse, true)
     @dimensions = options.fetch(:dimensions, DEFAULT_DISPLAY_DIMENSIONS)
     @video_capture_options = options.fetch(:video, {})
+    @extensions = options.fetch(:extensions, [])
+    @extensions = [@extensions] unless @extensions.is_a? Array
 
     already_running = xvfb_running? rescue false
     @destroy_at_exit = options.fetch(:destroy_at_exit, !(@reuse_display && already_running))
@@ -187,7 +189,7 @@ private
   def launch_xvfb
     out_pipe, in_pipe = IO.pipe
     @pid = Process.spawn(
-      CliUtil.path_to("Xvfb"), ":#{display}", "-screen", "0", dimensions, "-ac",
+      CliUtil.path_to("Xvfb"), ":#{display}", "-screen", "0", dimensions, "-ac", *extensions,
       err: in_pipe)
     raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless @pid
     # According to docs, you should either wait or detach on spawned procs:
@@ -251,5 +253,9 @@ private
         exit exit_status if exit_status
       end
     end
+  end
+
+  def extensions
+    @extensions.map { |ext| '+' + ext.to_s }
   end
 end

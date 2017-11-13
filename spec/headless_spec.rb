@@ -20,6 +20,17 @@ describe Headless do
       expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1024x768x16 -ac)+[hash_including(:err)])).and_return(123)
       headless = Headless.new(:dimensions => "1024x768x16")
     end
+
+    it "allows to enable extensions", focus: true do
+      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac +iglx)+[hash_including(:err)])).and_return(123)
+      headless = Headless.new(:extensions => [:iglx])
+
+      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac +iglx)+[hash_including(:err)])).and_return(123)
+      headless = Headless.new(:extensions => 'iglx')
+
+      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac +iglx +dummy)+[hash_including(:err)])).and_return(123)
+      headless = Headless.new(:extensions => ['iglx', :dummy])
+    end
   end
 
   context 'with stubbed launch_xvfb' do
