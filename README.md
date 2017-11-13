@@ -167,6 +167,22 @@ To install the necessary libraries on ubuntu:
  
 ## Troubleshooting
 
+### `/tmp/.X11-unix` is missing
+
+Xvfb requires this directory to exist. It cannot be created automatically, because the directory must be owned by the root user. (You will never get this error if running as root - for example, in a Docker container.)
+
+On macOS, the directory will be created when you run XQuartz.app. But since `/tmp` is cleared on reboot, you will need to open XQuartz.app after a reboot before running Xvfb. (You don't need to leave it running.)
+
+To create this directory manually, on either macOS or Linux:
+
+```
+mkdir /tmp/.X11-unix
+sudo chmod 1777 /tmp/.X11-unix
+sudo chown root /tmp/.X11-unix/
+```
+
+Note that you may need to run these commands after every reboot, too. 
+
 ### Display socket is taken but lock file is missing
 
 This means that there is an X server that is taking up the chosen display number, but its lock file is missing. This is an exceptional situation. Please stop the server process manually (`pkill Xvfb`) and open an issue.
