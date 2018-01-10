@@ -211,13 +211,13 @@ describe Headless do
 
       it "issues command to take screenshot, with default options" do
         allow(Headless::CliUtil).to receive(:path_to).with('import').and_return('path/import')
-        expect(headless).to receive(:system).with("path/import -display localhost:99 -window root /tmp/image.png")
+        expect(headless).to receive(:system).with("path/import -display :99 -window root /tmp/image.png")
         headless.take_screenshot("/tmp/image.png")
       end
 
       it "issues command to take screenshot, with using: :imagemagick" do
         allow(Headless::CliUtil).to receive(:path_to).with('import').and_return('path/import')
-        expect(headless).to receive(:system).with("path/import -display localhost:99 -window root /tmp/image.png")
+        expect(headless).to receive(:system).with("path/import -display :99 -window root /tmp/image.png")
         headless.take_screenshot("/tmp/image.png", :using => :imagemagick)
       end
 
