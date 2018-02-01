@@ -157,7 +157,7 @@ class Headless
     case using
     when :imagemagick
       CliUtil.ensure_application_exists!('import', "imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick")
-      system "#{CliUtil.path_to('import')} -display localhost:#{display} -window root #{file_path}"
+      system "#{CliUtil.path_to('import')} -display :#{display} -window root #{file_path}"
     when :xwd
       CliUtil.ensure_application_exists!('xwd', "xwd is not found on your system. Please install it using sudo apt-get install X11-apps")
       system "#{CliUtil.path_to('xwd')} -display localhost:#{display} -silent -root -out #{file_path}"
