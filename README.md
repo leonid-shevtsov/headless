@@ -1,6 +1,8 @@
 # Headless [![Travis CI status](https://secure.travis-ci.org/leonid-shevtsov/headless.png)](http://travis-ci.org/leonid-shevtsov/headless)
 
-Headless is *the* Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding the low-level action.
+<a href='https://ko-fi.com/X8X19BQH' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi1.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
+Headless is _the_ Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding the low-level action.
 It can also capture images and video from the virtual framebuffer. For example, you can record screenshots and screencasts of your failing integration specs.
 
 I created it so I can run Selenium tests in Cucumber without any shell scripting. Even more, you can go headless only when you run tests against Selenium.
@@ -33,7 +35,7 @@ require 'selenium-webdriver'
 Headless.ly do
   driver = Selenium::WebDriver.for :firefox
   driver.navigate.to 'http://google.com'
-  puts driver.title 
+  puts driver.title
 end
 ```
 
@@ -80,11 +82,11 @@ Headless.new(display: 100, destroy_at_exit: false).start
 # test_suite_that_could_be_ran_multiple_times.rb
 Headless.new(display: 100, reuse: true, destroy_at_exit: false).start
 
-# reap_headless.rb 
+# reap_headless.rb
 headless = Headless.new(display: 100, reuse: true)
 headless.destroy
 
-# kill_headless_without_waiting.rb 
+# kill_headless_without_waiting.rb
 headless = Headless.new
 headless.destroy_without_sync
 ```
@@ -136,35 +138,35 @@ headless = Headless.new(:video => { :frame_rate => 12, :codec => 'libx264' })
 Available options:
 
 * :codec - codec to be used by ffmpeg
-* :frame_rate      - frame rate of video capture
-* :provider        - ffmpeg provider - either :libav (default) or :ffmpeg
-* :provider_binary_path - Explicit path to avconv or ffmpeg.  Only required when the binary cannot be discovered on the system $PATH.
-* :pid_file_path   - path to ffmpeg pid file, default: "/tmp/.headless_ffmpeg_#{@display}.pid"
-* :tmp_file_path   - path to tmp video file,  default: "/tmp/.headless_ffmpeg_#{@display}.mov"
-* :log_file_path   - ffmpeg log file,         default: "/dev/null"
-* :extra           - array of extra ffmpeg options, default: [] 
+* :frame_rate - frame rate of video capture
+* :provider - ffmpeg provider - either :libav (default) or :ffmpeg
+* :provider_binary_path - Explicit path to avconv or ffmpeg. Only required when the binary cannot be discovered on the system $PATH.
+* :pid*file_path - path to ffmpeg pid file, default: "/tmp/.headless_ffmpeg*#{@display}.pid"
+* :tmp*file_path - path to tmp video file, default: "/tmp/.headless_ffmpeg*#{@display}.mov"
+* :log_file_path - ffmpeg log file, default: "/dev/null"
+* :extra - array of extra ffmpeg options, default: []
 
 ## Taking screenshots
 
 Call `headless.take_screenshot` to take a screenshot. It needs two arguments:
 
-- file_path - path where the image should be stored
-- options - options, that can be:
-    :using - :imagemagick or :xwd, :imagemagick is default, if :imagemagick is used, image format is determined by file_path extension
+* file_path - path where the image should be stored
+* options - options, that can be:
+  :using - :imagemagick or :xwd, :imagemagick is default, if :imagemagick is used, image format is determined by file_path extension
 
 Screenshots can be taken by either using `import` (part of `imagemagick` library) or `xwd` utility.
 
-`import` captures a screenshot and saves it in the format of the specified file. It is convenient but not too fast as 
+`import` captures a screenshot and saves it in the format of the specified file. It is convenient but not too fast as
 it has to do the encoding synchronously.
 
-`xwd` will capture a screenshot very fast and store it in its own format, which can then be converted to one 
+`xwd` will capture a screenshot very fast and store it in its own format, which can then be converted to one
 of other picture formats using, for example, netpbm utilities - `xwdtopnm <xwd_file> | pnmtopng > capture.png`.
 
 To install the necessary libraries on ubuntu:
 
 `import` - run `sudo apt-get install imagemagick`
 `xwd` - run `sudo apt-get install X11-apps` and if you are going to use netpbm utilities for image conversion - `sudo apt-get install netpbm`
- 
+
 ## Troubleshooting
 
 ### `/tmp/.X11-unix` is missing
@@ -181,7 +183,7 @@ sudo chmod 1777 /tmp/.X11-unix
 sudo chown root /tmp/.X11-unix/
 ```
 
-Note that you may need to run these commands after every reboot, too. 
+Note that you may need to run these commands after every reboot, too.
 
 ### Display socket is taken but lock file is missing
 
@@ -190,7 +192,6 @@ This means that there is an X server that is taking up the chosen display number
 ### Video not recording
 
 If video is not recording, and there are no visible exceptions, try passing the following option to Headless to figure out the reason: `Headless.new(video: {log_file_path: STDERR})`. In particular, there are some issues with the version of avconv packaged with Ubuntu 12.04 - an outdated release, but still in use on Travis.
-
 
 ##[Contributors](https://github.com/leonid-shevtsov/headless/graphs/contributors)
 
