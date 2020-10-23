@@ -90,7 +90,7 @@ describe Headless::VideoRecorder do
     describe "using #stop_and_save" do
       it "stops video recording and saves file" do
         expect(Headless::CliUtil).to receive(:kill_process).with(pidfile, :wait => true)
-        expect(File).to receive(:exists?).with(tmpfile).and_return(true)
+        expect(File).to receive(:exist?).with(tmpfile).and_return(true)
         expect(FileUtils).to receive(:mv).with(tmpfile, filename)
 
         subject.stop_and_save(filename)
