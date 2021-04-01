@@ -141,8 +141,8 @@ Available options:
 * :frame_rate - frame rate of video capture
 * :provider - ffmpeg provider - either :libav (default) or :ffmpeg
 * :provider_binary_path - Explicit path to avconv or ffmpeg. Only required when the binary cannot be discovered on the system $PATH.
-* :pid*file_path - path to ffmpeg pid file, default: "/tmp/.headless_ffmpeg*#{@display}.pid"
-* :tmp*file_path - path to tmp video file, default: "/tmp/.headless_ffmpeg*#{@display}.mov"
+* :pid_file_path - path to ffmpeg pid file, default: "/tmp/.headless_ffmpeg#{@display}.pid"
+* :tmp_file_path - path to tmp video file, default: "/tmp/.headless_ffmpeg#{@display}.mov"
 * :log_file_path - ffmpeg log file, default: "/dev/null"
 * :extra - array of extra ffmpeg options, default: []
 
