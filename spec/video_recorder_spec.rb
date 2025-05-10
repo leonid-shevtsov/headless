@@ -8,38 +8,25 @@ describe Headless::VideoRecorder do
   end
 
   describe "instantiation" do
-
-    it "throws an error if provider_binary_path is not installed" do
+    it "throws an error if ffmpeg_path is not installed" do
       allow(Headless::CliUtil).to receive(:application_exists?).and_return(false)
       expect { Headless::VideoRecorder.new(99, "1024x768x32") }.to raise_error(Headless::Exception)
     end
 
-    it "allows provider_binary_path to be specified" do
-      Tempfile.open('some_provider') do |f|
-        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg, provider_binary_path: f.path)
-        expect(v.provider_binary_path).to eq(f.path)
+    it "allows ffmpeg_path to be specified" do
+      Tempfile.open('ffmpeg') do |f|
+        v = Headless::VideoRecorder.new(99, "1024x768x32", ffmpeg_path: f.path)
+        expect(v.ffmpeg_path).to eq(f.path)
       end
     end
 
-    it "allows provider_binary_path to be specified" do
-      Tempfile.open('some_provider') do |f|
-        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg, provider_binary_path: f.path)
-        expect(v.provider_binary_path).to eq(f.path)
+    it "supports provider_binary_path for backward compatibility" do
+      Tempfile.open('ffmpeg') do |f|
+        v = Headless::VideoRecorder.new(99, "1024x768x32", provider_binary_path: f.path)
+        expect(v.ffmpeg_path).to eq(f.path)
       end
     end
 
-    context "provider_binary_path not specified" do
-      it "assumes the provider binary is 'ffmpeg' if the provider is :ffmpeg" do
-        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :ffmpeg)
-        expect(v.provider_binary_path).to eq("ffmpeg")
-      end
-
-      it "assumes the provider binary is 'avconv' if the provider is :libav" do
-        v = Headless::VideoRecorder.new(99, "1024x768x32", provider: :libav)
-        expect(v.provider_binary_path).to eq("avconv")
-      end
-
-    end
   end
 
   describe "#capture" do
@@ -48,28 +35,21 @@ describe Headless::VideoRecorder do
     end
 
     it "starts ffmpeg" do
-      expect(Headless::CliUtil).to receive(:fork_process).with(/^ffmpeg -y -r 30 -s 1024x768 -f x11grab -i :99 -g 600 -vcodec qtrle [^ ]+$/, "/tmp/.headless_ffmpeg_99.pid", '/dev/null')
+      expect(Headless::CliUtil).to receive(:fork_process).with(/^ffmpeg -y -r 30 -s 1024x768 -f x11grab -i :99 -vcodec qtrle [^ ]+$/, "/tmp/.headless_ffmpeg_99.pid", '/dev/null')
 
       recorder = Headless::VideoRecorder.new(99, "1024x768x32")
       recorder.start_capture
     end
 
     it "starts ffmpeg with specified codec" do
-      expect(Headless::CliUtil).to receive(:fork_process).with(/^ffmpeg -y -r 30 -s 1024x768 -f x11grab -i :99 -g 600 -vcodec libvpx [^ ]+$/, "/tmp/.headless_ffmpeg_99.pid", '/dev/null')
+      expect(Headless::CliUtil).to receive(:fork_process).with(/^ffmpeg -y -r 30 -s 1024x768 -f x11grab -i :99 -vcodec libvpx [^ ]+$/, "/tmp/.headless_ffmpeg_99.pid", '/dev/null')
 
       recorder = Headless::VideoRecorder.new(99, "1024x768x32", {:codec => 'libvpx'})
       recorder.start_capture
     end
 
-    it "starts ffmpeg from ffmpeg provider with correct parameters" do
-      expect(Headless::CliUtil).to receive(:fork_process).with(/^ffmpeg -y -r 30 -s 1024x768 -f x11grab -i :99 -vcodec qtrle [^ ]+$/, "/tmp/.headless_ffmpeg_99.pid", '/dev/null')
-
-      recorder = Headless::VideoRecorder.new(99, "1024x768x32", {:provider => :ffmpeg})
-      recorder.start_capture
-    end
-
     it "starts ffmpeg with specified extra device options" do
-      expect(Headless::CliUtil).to receive(:fork_process).with(/^ffmpeg -y -r 30 -s 1024x768 -f x11grab -i :99 -draw_mouse 0 -g 600 -vcodec qtrle [^ ]+$/, "/tmp/.headless_ffmpeg_99.pid", '/dev/null')
+      expect(Headless::CliUtil).to receive(:fork_process).with(/^ffmpeg -y -r 30 -s 1024x768 -f x11grab -i :99 -draw_mouse 0 -vcodec qtrle [^ ]+$/, "/tmp/.headless_ffmpeg_99.pid", '/dev/null')
 
       recorder = Headless::VideoRecorder.new(99, "1024x768x32", {:devices => ["-draw_mouse 0"]})
       recorder.start_capture

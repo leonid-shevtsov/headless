@@ -2,15 +2,14 @@ require 'tempfile'
 
 class Headless
   class VideoRecorder
-    attr_accessor :pid_file_path, :tmp_file_path, :log_file_path, :provider_binary_path
+    attr_accessor :pid_file_path, :tmp_file_path, :log_file_path, :ffmpeg_path
 
     # Construct a new Video Recorder instance. Typically done from inside Headless, but can be also created manually,
     # and even used separately from Headless' Xvfb features.
     # * display - display number to capture
     # * dimensions - dimensions of the captured video
     # * options - available options:
-    #   * provider - either :ffmpeg or :libav; default is :libav - switch if your system is provisioned with FFMpeg
-    #   * provider_binary_path - override path to ffmpeg / libav binary
+    #   * ffmpeg_path - override path to ffmpeg binary
     #   * pid_file_path - override path to PID file, default is placed in /tmp
     #   * tmp_file_path - override path to temp file, default is placed in /tmp
     #   * log_file_path - set log file path, default is /dev/null
@@ -27,16 +26,14 @@ class Headless
       @log_file_path = options.fetch(:log_file_path, "/dev/null")
       @codec = options.fetch(:codec, "qtrle")
       @frame_rate = options.fetch(:frame_rate, 30)
-      @provider = options.fetch(:provider, :libav)  # or :ffmpeg
 
-      # If no provider_binary_path was specified, then
-      # make a guess based upon the provider.
-      @provider_binary_path = options.fetch(:provider_binary_path, guess_the_provider_binary_path)
+      # If no ffmpeg_path was specified, use the default
+      @ffmpeg_path = options.fetch(:ffmpeg_path, options.fetch(:provider_binary_path, 'ffmpeg'))
 
       @extra = Array(options.fetch(:extra, []))
       @devices = Array(options.fetch(:devices, []))
 
-      CliUtil.ensure_application_exists!(provider_binary_path, "#{provider_binary_path} not found on your system. Install it or change video recorder provider")
+      CliUtil.ensure_application_exists!(ffmpeg_path, "#{ffmpeg_path} not found on your system. Install it or change video recorder provider")
     end
 
     def capture_running?
@@ -76,28 +73,17 @@ class Headless
 
     private
 
-    def guess_the_provider_binary_path
-      @provider== :libav ? 'avconv' : 'ffmpeg'
-    end
-
     def command_line_for_capture
-      if @provider == :libav
-        group_of_pic_size_option = '-g 600'
-        dimensions = @dimensions
-      else
-        group_of_pic_size_option = nil
-        dimensions = @dimensions.match(/^(\d+x\d+)/)[0]
-      end
+      dimensions = @dimensions.match(/^(\d+x\d+)/)[0]
 
       [
-         CliUtil.path_to(provider_binary_path),
+         CliUtil.path_to(ffmpeg_path),
          "-y",
          "-r #{@frame_rate}",
          "-s #{dimensions}",
          "-f x11grab",
          "-i :#{@display}",
          @devices,
-         group_of_pic_size_option,
          "-vcodec #{@codec}",
          @extra,
          @tmp_file_path
