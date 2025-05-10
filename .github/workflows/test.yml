@@ -1,0 +1,35 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby:
+          - 2.2.8
+          - 2.4.2
+          - jruby-9.1.14.0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libav-tools xvfb wget tar
+      - name: Install geckodriver
+        run: |
+          wget https://github.com/mozilla/geckodriver/releases/download/v0.19.1/geckodriver-v0.19.1-linux64.tar.gz
+          mkdir -p geckodriver
+          tar -xzf geckodriver-v0.19.1-linux64.tar.gz -C geckodriver
+          echo "$GITHUB_WORKSPACE/geckodriver" >> $GITHUB_PATH
+      - name: Run tests
+        run: |
+          xvfb-run --auto-servernum bundle exec rspec
