@@ -5,21 +5,21 @@ class Headless
     end
 
     def self.ensure_application_exists!(app, error_message)
-      if !self.application_exists?(app)
+      if !application_exists?(app)
         raise Headless::Exception.new(error_message)
       end
     end
 
     # Credit: http://stackoverflow.com/a/5471032/6678
     def self.path_to(app)
-      exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
-      ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+      exts = ENV["PATHEXT"] ? ENV["PATHEXT"].split(";") : [""]
+      ENV["PATH"].split(File::PATH_SEPARATOR).each do |path|
         exts.each { |ext|
           exe = File.join(path, "#{app}#{ext}")
           return exe if File.executable?(exe) && !File.directory?(exe)
         }
       end
-      return nil
+      nil
     end
 
     def self.process_mine?(pid)
@@ -35,21 +35,26 @@ class Headless
     end
 
     def self.read_pid(pid_filename)
-      pid = (File.read(pid_filename) rescue "").strip
+      pid = begin
+        File.read(pid_filename)
+      rescue
+        ""
+      end.strip
       pid.empty? ? nil : pid.to_i
     end
 
-    def self.fork_process(command, pid_filename, log_filename='/dev/null')
+    def self.fork_process(command, pid_filename, log_filename = File::NULL)
       pid = Process.spawn(command, err: log_filename)
-      File.open pid_filename, 'w' do |f|
+      File.open pid_filename, "w" do |f|
         f.puts pid
       end
     end
 
-    def self.kill_process(pid_filename, options={})
-      if pid = read_pid(pid_filename)
+    def self.kill_process(pid_filename, options = {})
+      pid = read_pid(pid_filename)
+      if pid
         begin
-          Process.kill 'TERM', pid
+          Process.kill "TERM", pid
           Process.wait pid if options[:wait]
         rescue Errno::ESRCH
           # no such process; assume it's already killed

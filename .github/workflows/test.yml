@@ -1,0 +1,38 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby:
+          - "3.4"
+          - "3.3"
+          - "3.2"
+          - "jruby-10.0.0.1"
+          - "jruby-9.4.12.1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg imagemagick
+      - name: Install geckodriver
+        env:
+          GECKODRIVER_VERSION: v0.36.0
+        run: |
+          wget https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz
+          mkdir -p geckodriver
+          tar -xzf geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz -C geckodriver
+          echo "$GITHUB_WORKSPACE/geckodriver" >> $GITHUB_PATH
+      - name: Run tests
+        run: bundle exec rspec
