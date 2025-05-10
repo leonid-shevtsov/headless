@@ -148,7 +148,7 @@ class Headless
     headless.start
     yield headless
   ensure
-    headless && headless.destroy
+    headless&.destroy
   end
   class << self; alias_method :ly, :run; end
 
@@ -161,16 +161,16 @@ class Headless
     case using
     when :imagemagick
       CliUtil.ensure_application_exists!("import",
-        "imagemagick is not found on your system. " +
+        "imagemagick is not found on your system. " \
         "Please install it using sudo apt-get install imagemagick")
       system "#{CliUtil.path_to("import")} -display :#{display} -window root #{file_path}"
     when :xwd
       CliUtil.ensure_application_exists!("xwd",
-        "xwd is not found on your system. " +
+        "xwd is not found on your system. " \
         "Please install it using sudo apt-get install X11-apps")
       system "#{CliUtil.path_to("xwd")} -display localhost:#{display} -silent -root -out #{file_path}"
     when :graphicsmagick, :gm
-      CliUtil.ensure_application_exists!("gm", "graphicsmagick is not found on your system. " +
+      CliUtil.ensure_application_exists!("gm", "graphicsmagick is not found on your system. " \
       "Please install it.")
       system "#{CliUtil.path_to("gm")} import -display localhost:#{display} -window root #{file_path}"
     else
@@ -213,7 +213,7 @@ class Headless
   def ensure_xvfb_launched(out_pipe)
     start_time = Time.now
     errors = ""
-    begin
+    loop do
       begin
         errors += out_pipe.read_nonblock(10000)
         if errors.include? "directory /tmp/.X11-unix will not be created."
@@ -234,7 +234,8 @@ class Headless
         raise Headless::Exception.new("Xvfb launched but did not complete initialization")
       end
       # Continue looping until Xvfb has written its pidfile:
-    end while !xvfb_running?
+      break if xvfb_running?
+    end
 
     # If for any reason the pid file doesn't match ours, we lost the race to
     # get the file lock:
