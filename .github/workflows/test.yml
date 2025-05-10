@@ -27,11 +27,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg imagemagick
       - name: Install geckodriver
+        env:
+          GECKODRIVER_VERSION: v0.36.0
         run: |
-          LATEST_VERSION=$(wget -qO- https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep -o '"tag_name": "v[0-9.]*"' | cut -d'"' -f4)
-          wget https://github.com/mozilla/geckodriver/releases/download/${LATEST_VERSION}/geckodriver-${LATEST_VERSION}-linux64.tar.gz
+          wget https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz
           mkdir -p geckodriver
-          tar -xzf geckodriver-${LATEST_VERSION}-linux64.tar.gz -C geckodriver
+          tar -xzf geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz -C geckodriver
           echo "$GITHUB_WORKSPACE/geckodriver" >> $GITHUB_PATH
       - name: Run tests
         run: |
