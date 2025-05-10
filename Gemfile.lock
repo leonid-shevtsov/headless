@@ -1,0 +1,47 @@
+PATH
+  remote: .
+  specs:
+    headless (2.3.1)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    base64 (0.2.0)
+    diff-lcs (1.6.1)
+    logger (1.7.0)
+    rake (13.2.1)
+    rexml (3.4.1)
+    rspec (3.13.0)
+      rspec-core (~> 3.13.0)
+      rspec-expectations (~> 3.13.0)
+      rspec-mocks (~> 3.13.0)
+    rspec-core (3.13.3)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.4)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.4)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-support (3.13.3)
+    rubyzip (2.4.1)
+    selenium-webdriver (4.32.0)
+      base64 (~> 0.2)
+      logger (~> 1.4)
+      rexml (~> 3.2, >= 3.2.5)
+      rubyzip (>= 1.2.2, < 3.0)
+      websocket (~> 1.0)
+    websocket (1.2.11)
+
+PLATFORMS
+  java
+  ruby
+
+DEPENDENCIES
+  headless!
+  rake
+  rspec (>= 3.7)
+  selenium-webdriver (>= 4.32)
+
+BUNDLED WITH
+   2.6.8

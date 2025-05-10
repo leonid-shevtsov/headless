@@ -1,4 +1,4 @@
 source "http://rubygems.org"
 
-# Specify your gem's dependencies in ci_util.gemspec
+# Specify dependencies in headless.gemspec
 gemspec
