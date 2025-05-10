@@ -35,5 +35,4 @@ jobs:
           tar -xzf geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz -C geckodriver
           echo "$GITHUB_WORKSPACE/geckodriver" >> $GITHUB_PATH
       - name: Run tests
-        run: |
-          xvfb-run --auto-servernum bundle exec rspec
+        run: bundle exec rspec
