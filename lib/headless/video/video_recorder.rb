@@ -1,4 +1,4 @@
-require 'tempfile'
+require "tempfile"
 
 class Headless
   class VideoRecorder
@@ -28,13 +28,14 @@ class Headless
       @frame_rate = options.fetch(:frame_rate, 30)
 
       # If no ffmpeg_path was specified, use the default
-      @ffmpeg_path = options.fetch(:ffmpeg_path, options.fetch(:provider_binary_path, 'ffmpeg'))
+      @ffmpeg_path = options.fetch(:ffmpeg_path, options.fetch(:provider_binary_path, "ffmpeg"))
 
       @extra = Array(options.fetch(:extra, []))
       @devices = Array(options.fetch(:devices, []))
 
       CliUtil.ensure_application_exists!(ffmpeg_path,
-                                         "#{ffmpeg_path} not found on your system. Install it or change video recorder provider")
+        "#{ffmpeg_path} not found on your system. " \
+        "Install it or change video recorder provider")
     end
 
     def capture_running?
@@ -43,7 +44,7 @@ class Headless
 
     def start_capture
       CliUtil.fork_process(command_line_for_capture,
-                           @pid_file_path, @log_file_path)
+        @pid_file_path, @log_file_path)
       at_exit do
         exit_status = $!.status if $!.is_a?(SystemExit)
         stop_and_discard
@@ -52,8 +53,8 @@ class Headless
     end
 
     def stop_and_save(path)
-      CliUtil.kill_process(@pid_file_path, :wait => true)
-      if File.exists? @tmp_file_path
+      CliUtil.kill_process(@pid_file_path, wait: true)
+      if File.exist? @tmp_file_path
         begin
           FileUtils.mkdir_p(File.dirname(path))
           FileUtils.mv(@tmp_file_path, path)
@@ -64,7 +65,7 @@ class Headless
     end
 
     def stop_and_discard
-      CliUtil.kill_process(@pid_file_path, :wait => true)
+      CliUtil.kill_process(@pid_file_path, wait: true)
       begin
         FileUtils.rm(@tmp_file_path)
       rescue Errno::ENOENT
@@ -88,7 +89,7 @@ class Headless
         "-vcodec #{@codec}",
         @extra,
         @tmp_file_path
-      ].flatten.compact.join(' ')
+      ].flatten.compact.join(" ")
     end
   end
 end
