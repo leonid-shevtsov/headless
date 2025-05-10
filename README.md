@@ -1,6 +1,9 @@
-# Headless [![Travis CI status](https://secure.travis-ci.org/leonid-shevtsov/headless.png)](http://travis-ci.org/leonid-shevtsov/headless)
+# Headless
 
-<a href='https://ko-fi.com/X8X19BQH' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi1.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+![Gem Version](https://img.shields.io/gem/v/headless)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/leonid-shevtsov/headless/test.yml)
+
+<a href="https://www.buymeacoffee.com/leonidshevtsov" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 Headless is _the_ Ruby interface for Xvfb. It allows you to create a headless display straight from Ruby code, hiding the low-level action.
 It can also capture images and video from the virtual framebuffer. For example, you can record screenshots and screencasts of your failing integration specs.
@@ -12,7 +15,7 @@ Documentation is available at [rubydoc.info](http://www.rubydoc.info/gems/headle
 
 [Changelog](https://github.com/leonid-shevtsov/headless/blob/master/CHANGELOG)
 
-**Note: Headless will NOT hide most applications on OS X. [Here is a detailed explanation](https://github.com/leonid-shevtsov/headless/issues/31#issuecomment-8933108)**
+**Note: Headless will NOT hide most applications on macOS. [Here is a detailed explanation](https://github.com/leonid-shevtsov/headless/issues/31#issuecomment-8933108)**
 
 ## Installation
 
@@ -137,20 +140,20 @@ headless = Headless.new(:video => { :frame_rate => 12, :codec => 'libx264' })
 
 Available options:
 
-* :codec - codec to be used by ffmpeg
-* :frame_rate - frame rate of video capture
-* :ffmpeg_path - Explicit path to ffmpeg. Only required when the binary cannot be discovered on the system $PATH.
-* :pid_file_path - path to ffmpeg pid file, default: "/tmp/.headless_ffmpeg_#{@display}.pid"
-* :tmp_file_path - path to tmp video file, default: "/tmp/.headless_ffmpeg_#{@display}.mov"
-* :log_file_path - ffmpeg log file, default: "/dev/null"
-* :extra - array of extra ffmpeg options, default: []
+- :codec - codec to be used by ffmpeg
+- :frame_rate - frame rate of video capture
+- :ffmpeg_path - Explicit path to ffmpeg. Only required when the binary cannot be discovered on the system $PATH.
+- :pid*file_path - path to ffmpeg pid file, default: "/tmp/.headless_ffmpeg*#{@display}.pid"
+- :tmp*file_path - path to tmp video file, default: "/tmp/.headless_ffmpeg*#{@display}.mov"
+- :log_file_path - ffmpeg log file, default: "/dev/null"
+- :extra - array of extra ffmpeg options, default: []
 
 ## Taking screenshots
 
 Call `headless.take_screenshot` to take a screenshot. It needs two arguments:
 
-* file_path - path where the image should be stored
-* options - options, that can be:
+- file_path - path where the image should be stored
+- options - options, that can be:
   :using - :imagemagick or :xwd, :imagemagick is default, if :imagemagick is used, image format is determined by file_path extension
 
 Screenshots can be taken by either using `import` (part of `imagemagick` library) or `xwd` utility.
@@ -196,4 +199,4 @@ If video is not recording, and there are no visible exceptions, try passing the 
 
 ---
 
-&copy; 2011-2015 Leonid Shevtsov, released under the MIT license
+&copy; 2011-2025 [Leonid Shevtsov](https://leonid.shevtsov.me), released under the MIT license

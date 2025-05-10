@@ -1,73 +1,80 @@
+## 3.0.0 (2025-05-10)
+
+- Better late then never!
+- Support all modern Rubies.
+- Drop support of Ruby before 3.2.
+- Drop `avconv` because it's no longer maintained.
+
 ## 2.3.1 (2016-08-25)
 
-* Full JRuby support
-* HOTFIX remove `mkmf` require.
+- Full JRuby support
+- HOTFIX remove `mkmf` require.
 
 ## 2.3.0 (2016-08-24)
 
-* Remove dependency on the `which` command (from @skateman)
-* Add `devices` options to video recorder (from @atzorvas)
-* By default, do not destroy Headless started by a different process (from @marxarelli)
+- Remove dependency on the `which` command (from @skateman)
+- Add `devices` options to video recorder (from @atzorvas)
+- By default, do not destroy Headless started by a different process (from @marxarelli)
 
 ## 2.2.3 (2016-03-17)
 
-* Fix race condition when starting Xvfb [#75] (from @NfNitLoop)
+- Fix race condition when starting Xvfb [#75] (from @NfNitLoop)
 
 ## 2.2.2 (2016-02-08)
 
-* Fix file permissions issue with gem. No actual changes
+- Fix file permissions issue with gem. No actual changes
 
 ## 2.2.0 (2015-07-05)
 
-* Allow reuse of displays started by other user (from @marxarelli)
-* Add support for graphicsmagick instead of ImageMagick (from @BlakeMesdag)
-* Wait for Xvfb to finish when destroying it, to avoid creating zombie processes (from @samnissen)
+- Allow reuse of displays started by other user (from @marxarelli)
+- Add support for graphicsmagick instead of ImageMagick (from @BlakeMesdag)
+- Wait for Xvfb to finish when destroying it, to avoid creating zombie processes (from @samnissen)
 
 ## 2.1.0 (2015-05-10)
 
-* Allow path to video recorder binary to be customized (from @briandamaged)
+- Allow path to video recorder binary to be customized (from @briandamaged)
 
 ## 2.0.0 (2015-04-23)
 
-* Rewritten Xvfb launch using Process.spawn and avoiding a shell
-* Do not manually remove X11 lock file when stopping Xvfb; this isn’t conventional. Should eliminate some errors with not being able to find Xvfb
-* More informative error messages
-* Detect situation when Xvfb can’t listen to any sockets and raise corresponding error.
-* If video recorder provider is libav, use avconv binary instead of ffmpeg
-* Fixes to video recorder launch options (from @gpavlidi, @abotalov, @ynagorny, @WeAreFarmGeek)
-* Customize launch timeout (from @ShockwaveNN)
-* Properly working integration tests
+- Rewritten Xvfb launch using Process.spawn and avoiding a shell
+- Do not manually remove X11 lock file when stopping Xvfb; this isn’t conventional. Should eliminate some errors with not being able to find Xvfb
+- More informative error messages
+- Detect situation when Xvfb can’t listen to any sockets and raise corresponding error.
+- If video recorder provider is libav, use avconv binary instead of ffmpeg
+- Fixes to video recorder launch options (from @gpavlidi, @abotalov, @ynagorny, @WeAreFarmGeek)
+- Customize launch timeout (from @ShockwaveNN)
+- Properly working integration tests
 
 ## 1.0.2 (2014-06-03)
 
-* pass options correctly to ffmpeg (from @abotalov)
-* only destroy headless if it was created (from @evandrodp)
+- pass options correctly to ffmpeg (from @abotalov)
+- only destroy headless if it was created (from @evandrodp)
 
 ## 1.0.1 (2013-02-20)
 
-* when starting, wait for Xvfb to launch (fixed issue #33)
+- when starting, wait for Xvfb to launch (fixed issue #33)
 
 ## 1.0.0 (2013-01-28)
 
-* bugfix release
-* version number compliant to the [semantic versioning system](http://semver.org)
+- bugfix release
+- version number compliant to the [semantic versioning system](http://semver.org)
 
 ## 0.3.1 (2012-03-29)
 
-* added autopicking of display number, if the requested one is already taken
-* fixed plenty of bugs thanks to @recursive, @gshakhn, @masatomo and @mabotelh
+- added autopicking of display number, if the requested one is already taken
+- fixed plenty of bugs thanks to @recursive, @gshakhn, @masatomo and @mabotelh
 
 ## 0.2.2 (2011-09-01)
 
-* improve detection of ffmpeg process (from https://github.com/alanshields/headless)
+- improve detection of ffmpeg process (from https://github.com/alanshields/headless)
 
 ## 0.2.1 (2011-08-26)
 
-* added ability to capture screenshots (from https://github.com/iafonov/headless)
-* added ability to capture video (from https://github.com/iafonov/headless)
-* fixed issue with stray pidfile
+- added ability to capture screenshots (from https://github.com/iafonov/headless)
+- added ability to capture video (from https://github.com/iafonov/headless)
+- fixed issue with stray pidfile
 
 ## 0.1.0 (2010-08-15)
 
-* introduced options
-* make it possible to change virtual screen dimensions and pixel depth
+- introduced options
+- make it possible to change virtual screen dimensions and pixel depth
