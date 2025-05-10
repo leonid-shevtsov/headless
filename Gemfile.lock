@@ -6,10 +6,24 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
+    ast (2.4.3)
     base64 (0.2.0)
     diff-lcs (1.6.1)
+    json (2.11.3)
+    json (2.11.3-java)
+    language_server-protocol (3.17.0.4)
+    lint_roller (1.1.0)
     logger (1.7.0)
+    parallel (1.27.0)
+    parser (3.3.8.0)
+      ast (~> 2.4.1)
+      racc
+    prism (1.4.0)
+    racc (1.8.1)
+    racc (1.8.1-java)
+    rainbow (3.1.1)
     rake (13.2.1)
+    regexp_parser (2.10.0)
     rexml (3.4.1)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
@@ -24,6 +38,37 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.3)
+    rubocop (1.75.5)
+      json (~> 2.3)
+      language_server-protocol (~> 3.17.0.2)
+      lint_roller (~> 1.1.0)
+      parallel (~> 1.10)
+      parser (>= 3.3.0.2)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 2.9.3, < 3.0)
+      rubocop-ast (>= 1.44.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 4.0)
+    rubocop-ast (1.44.1)
+      parser (>= 3.3.7.2)
+      prism (~> 1.4)
+    rubocop-capybara (2.22.1)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
+    rubocop-factory_bot (2.27.1)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
+    rubocop-rake (0.7.1)
+      lint_roller (~> 1.1)
+      rubocop (>= 1.72.1)
+    rubocop-rspec (2.31.0)
+      rubocop (~> 1.40)
+      rubocop-capybara (~> 2.17)
+      rubocop-factory_bot (~> 2.22)
+      rubocop-rspec_rails (~> 2.28)
+    rubocop-rspec_rails (2.29.1)
+      rubocop (~> 1.61)
+    ruby-progressbar (1.13.0)
     rubyzip (2.4.1)
     selenium-webdriver (4.32.0)
       base64 (~> 0.2)
@@ -31,6 +76,9 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    unicode-display_width (3.1.4)
+      unicode-emoji (~> 4.0, >= 4.0.4)
+    unicode-emoji (4.0.4)
     websocket (1.2.11)
 
 PLATFORMS
@@ -41,6 +89,9 @@ DEPENDENCIES
   headless!
   rake
   rspec (>= 3.7)
+  rubocop
+  rubocop-rake
+  rubocop-rspec
   selenium-webdriver (>= 4.32)
 
 BUNDLED WITH
