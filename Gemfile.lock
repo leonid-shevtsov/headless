@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    headless (2.3.1)
+    headless (3.0.0)
 
 GEM
   remote: http://rubygems.org/
