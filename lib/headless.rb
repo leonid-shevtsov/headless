@@ -40,7 +40,6 @@ require 'headless/video/video_recorder'
 # TODO test that reuse actually works with an existing xvfb session
 #++
 class Headless
-
   DEFAULT_DISPLAY_NUMBER = 99
   MAX_DISPLAY_NUMBER = 10_000
   DEFAULT_DISPLAY_DIMENSIONS = '1280x1024x24'
@@ -139,27 +138,29 @@ class Headless
   #     # perform operations in headless mode
   #   end
   # See #new for options
-  def self.run(options={}, &block)
+  def self.run(options = {}, &block)
     headless = Headless.new(options)
     headless.start
     yield headless
   ensure
     headless && headless.destroy
   end
-  class <<self; alias_method :ly, :run; end
+  class << self; alias_method :ly, :run; end
 
   def video
     @video_recorder ||= VideoRecorder.new(display, dimensions, @video_capture_options)
   end
 
-  def take_screenshot(file_path, options={})
+  def take_screenshot(file_path, options = {})
     using = options.fetch(:using, :imagemagick)
     case using
     when :imagemagick
-      CliUtil.ensure_application_exists!('import', "imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick")
+      CliUtil.ensure_application_exists!('import',
+                                         "imagemagick is not found on your system. Please install it using sudo apt-get install imagemagick")
       system "#{CliUtil.path_to('import')} -display :#{display} -window root #{file_path}"
     when :xwd
-      CliUtil.ensure_application_exists!('xwd', "xwd is not found on your system. Please install it using sudo apt-get install X11-apps")
+      CliUtil.ensure_application_exists!('xwd',
+                                         "xwd is not found on your system. Please install it using sudo apt-get install X11-apps")
       system "#{CliUtil.path_to('xwd')} -display localhost:#{display} -silent -root -out #{file_path}"
     when :graphicsmagick, :gm
       CliUtil.ensure_application_exists!('gm', "graphicsmagick is not found on your system. Please install it.")
@@ -169,7 +170,7 @@ class Headless
     end
   end
 
-private
+  private
 
   def attach_xvfb
     possible_display_set = @autopick_display ? @display..MAX_DISPLAY_NUMBER : Array(@display)
@@ -190,13 +191,15 @@ private
     out_pipe, in_pipe = IO.pipe
     @pid = Process.spawn(
       CliUtil.path_to("Xvfb"), ":#{display}", "-screen", "0", dimensions, "-ac", *extensions,
-      err: in_pipe)
+      err: in_pipe
+    )
     raise Headless::Exception.new("Xvfb did not launch - something's wrong") unless @pid
+
     # According to docs, you should either wait or detach on spawned procs:
     Process.detach @pid
     return ensure_xvfb_launched(out_pipe)
-    ensure
-      in_pipe.close
+  ensure
+    in_pipe.close
   end
 
   def ensure_xvfb_launched(out_pipe)
@@ -208,7 +211,8 @@ private
         if errors.include? "directory /tmp/.X11-unix will not be created."
           raise Headless::Exception, "/tmp/.X11-unix is missing - check the Headless troubleshooting guide"
         elsif errors.include? "Cannot establish any listening sockets"
-          raise Headless::Exception, "Display socket is taken but lock file is missing - check the Headless troubleshooting guide"
+          raise Headless::Exception,
+                "Display socket is taken but lock file is missing - check the Headless troubleshooting guide"
         elsif errors.include? "Server is already active for display #{display}"
           # This can happen if there is a race to grab the lock file.
           # Not an exception, just return false to let pick_available_display choose another:
@@ -218,8 +222,8 @@ private
         # will retry next cycle
       end
       sleep 0.01 # to avoid cpu hogging
-      raise Headless::Exception.new("Xvfb launched but did not complete initialization") if (Time.now-start_time)>=@xvfb_launch_timeout
-    # Continue looping until Xvfb has written its pidfile:
+      raise Headless::Exception.new("Xvfb launched but did not complete initialization") if (Time.now - start_time) >= @xvfb_launch_timeout
+      # Continue looping until Xvfb has written its pidfile:
     end while !xvfb_running?
 
     # If for any reason the pid file doesn't match ours, we lost the race to

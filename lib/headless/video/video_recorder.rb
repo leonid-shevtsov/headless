@@ -33,7 +33,8 @@ class Headless
       @extra = Array(options.fetch(:extra, []))
       @devices = Array(options.fetch(:devices, []))
 
-      CliUtil.ensure_application_exists!(ffmpeg_path, "#{ffmpeg_path} not found on your system. Install it or change video recorder provider")
+      CliUtil.ensure_application_exists!(ffmpeg_path,
+                                         "#{ffmpeg_path} not found on your system. Install it or change video recorder provider")
     end
 
     def capture_running?
@@ -77,16 +78,16 @@ class Headless
       dimensions = @dimensions.match(/^(\d+x\d+)/)[0]
 
       [
-         CliUtil.path_to(ffmpeg_path),
-         "-y",
-         "-r #{@frame_rate}",
-         "-s #{dimensions}",
-         "-f x11grab",
-         "-i :#{@display}",
-         @devices,
-         "-vcodec #{@codec}",
-         @extra,
-         @tmp_file_path
+        CliUtil.path_to(ffmpeg_path),
+        "-y",
+        "-r #{@frame_rate}",
+        "-s #{dimensions}",
+        "-f x11grab",
+        "-i :#{@display}",
+        @devices,
+        "-vcodec #{@codec}",
+        @extra,
+        @tmp_file_path
       ].flatten.compact.join(' ')
     end
   end

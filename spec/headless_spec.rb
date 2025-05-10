@@ -12,23 +12,28 @@ describe Headless do
     end
 
     it "starts Xvfb" do
-      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac)+[hash_including(:err)])).and_return(123)
+      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24
+                                                   -ac) + [hash_including(:err)])).and_return(123)
       headless = Headless.new
     end
 
     it "allows setting screen dimensions" do
-      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1024x768x16 -ac)+[hash_including(:err)])).and_return(123)
+      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1024x768x16
+                                                   -ac) + [hash_including(:err)])).and_return(123)
       headless = Headless.new(:dimensions => "1024x768x16")
     end
 
     it "allows to enable extensions", focus: true do
-      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac +iglx)+[hash_including(:err)])).and_return(123)
+      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac
+                                                   +iglx) + [hash_including(:err)])).and_return(123)
       headless = Headless.new(:extensions => [:iglx])
 
-      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac +iglx)+[hash_including(:err)])).and_return(123)
+      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac
+                                                   +iglx) + [hash_including(:err)])).and_return(123)
       headless = Headless.new(:extensions => 'iglx')
 
-      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac +iglx +dummy)+[hash_including(:err)])).and_return(123)
+      expect(Process).to receive(:spawn).with(*(%w(/usr/bin/Xvfb :99 -screen 0 1280x1024x24 -ac +iglx
+                                                   +dummy) + [hash_including(:err)])).and_return(123)
       headless = Headless.new(:extensions => ['iglx', :dummy])
     end
   end
@@ -59,7 +64,7 @@ describe Headless do
         end
 
         context "and display reuse is allowed" do
-          let(:options) { {:reuse => true} }
+          let(:options) { { :reuse => true } }
 
           it "should reuse the existing Xvfb" do
             expect(Headless.new(options).display).to eq 99
@@ -71,21 +76,21 @@ describe Headless do
         end
 
         context "and display reuse is not allowed" do
-          let(:options) { {:reuse => false} }
+          let(:options) { { :reuse => false } }
 
           it "should pick the next available display number" do
             expect(Headless.new(options).display).to eq 100
           end
 
           context "and display number is explicitly set" do
-            let(:options) { {:reuse => false, :display => 99} }
+            let(:options) { { :reuse => false, :display => 99 } }
 
             it "should fail with an exception" do
               expect { Headless.new(options) }.to raise_error(Headless::Exception)
             end
 
             context "and autopicking is allowed" do
-              let(:options) { {:reuse => false, :display => 99, :autopick => true} }
+              let(:options) { { :reuse => false, :display => 99, :autopick => true } }
 
               it "should pick the next available display number" do
                 expect(Headless.new(options).display).to eq 100
@@ -105,7 +110,7 @@ describe Headless do
         end
 
         context "and display autopicking is not allowed" do
-          let(:options) { {:autopick => false} }
+          let(:options) { { :autopick => false } }
 
           it "should reuse the display" do
             expect(Headless.new(options).display).to eq 99
@@ -113,7 +118,7 @@ describe Headless do
         end
 
         context "and display autopicking is allowed" do
-          let(:options) { {:autopick => true} }
+          let(:options) { { :autopick => true } }
 
           it "should pick the next display number" do
             expect(Headless.new(options).display).to eq 100
@@ -241,7 +246,7 @@ describe Headless do
     end
   end
 
-private
+  private
 
   def stub_environment
     allow(Headless::CliUtil).to receive(:application_exists?).and_return(true)

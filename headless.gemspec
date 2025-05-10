@@ -13,12 +13,12 @@ Gem::Specification.new do |s|
   s.requirements = 'Xvfb'
   s.homepage = 'https://github.com/leonid-shevtsov/headless'
 
-  s.files         = `git ls-files`.split("\n")
+  s.files = `git ls-files`.split("\n")
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '>= 3.7'
-  s.add_development_dependency 'selenium-webdriver', '>=4.32'
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'rubocop-rake'
   s.add_development_dependency 'rubocop-rspec'
+  s.add_development_dependency 'selenium-webdriver', '>=4.32'
 end

@@ -39,14 +39,14 @@ class Headless
       pid.empty? ? nil : pid.to_i
     end
 
-    def self.fork_process(command, pid_filename, log_filename='/dev/null')
+    def self.fork_process(command, pid_filename, log_filename = '/dev/null')
       pid = Process.spawn(command, err: log_filename)
       File.open pid_filename, 'w' do |f|
         f.puts pid
       end
     end
 
-    def self.kill_process(pid_filename, options={})
+    def self.kill_process(pid_filename, options = {})
       if pid = read_pid(pid_filename)
         begin
           Process.kill 'TERM', pid
